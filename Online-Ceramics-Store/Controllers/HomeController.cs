@@ -2,19 +2,19 @@
 using Microsoft.AspNetCore.Mvc;
 using MySqlConnector;
 using Online_Ceramics_Store.Models;
-//using var connection = new MySqlConnection("Server=sql11.freesqldatabase.com;User ID=sql11683721;Password=cwfasjNBlh;Database=sql11683721");
 
 namespace Online_Ceramics_Store.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-        private readonly string _connectionString = "Server=sql11.freesqldatabase.com;User ID=sql11683721;Password=cwfasjNBlh;Database=sql11683721";
+        private IConfiguration _configuraion;
+        private readonly string _connectionString = "";
 
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController( IConfiguration configuration)
         {
-            _logger = logger;
+            _configuraion = configuration;
+            _connectionString = _configuraion.GetConnectionString("Default");
         }
 
         public async Task<IActionResult> Index()
