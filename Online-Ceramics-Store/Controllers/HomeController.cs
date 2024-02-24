@@ -16,40 +16,27 @@ namespace Online_Ceramics_Store.Controllers
             _configuraion = configuration;
             _connectionString = _configuraion.GetConnectionString("Default");
         }
-
+        //[Route("")]
         public async Task<IActionResult> Index()
         {
-            List<Product> products = new List<Product>();
-
             // Database interaction code
             using var connection = new MySqlConnection(_connectionString);
             await connection.OpenAsync();
 
-            using var command = new MySqlCommand("SELECT * FROM products;", connection);
+            using var command = new MySqlCommand("SELECT * FROM items;", connection);
             using var reader = await command.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
-            {
-                Product product = new Product
-                {
-                    // Assuming Product class properties match the columns in the "products" table
-                    Name = reader.GetString("name"),
-                    ProId = reader.GetInt32("proid"),
-                    Dep = reader.GetString("dep"),
-                    Brand = reader.GetString("brand")
-                    // Map other properties accordingly
-                };
-
-                products.Add(product);
-            }
-
-            return View(products);
+            return View();
         }
 
         public IActionResult Privacy()
         {
             return View();
         }
-
+        [Route("")]
+        public IActionResult HomePage()
+        {
+            return View();
+        }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
