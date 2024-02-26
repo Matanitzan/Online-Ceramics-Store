@@ -15,19 +15,36 @@
   <ItemGroup>
     <None Remove="Views\ShoppingCart\" />
     <None Remove="Views\Products\" />
-    <None Remove="Views\Home\Images\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\ShoppingCart\" />
     <Folder Include="Views\Products\" />
-    <Folder Include="Views\Home\Images\" />
+    <Folder Include="wwwroot\Images\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="wwwroot\Images\.DS_Store" />
+    <None Include="wwwroot\Images\KalVahomer-1.jpg" />
+    <None Include="wwwroot\Images\KalVahomer-2.jpg" />
+    <None Include="wwwroot\Images\KalVahomer-3.jpg" />
+    <None Include="wwwroot\Images\KalVahomer-4.jpg" />
+    <None Include="wwwroot\Images\KalVahomer-5.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\Images\KalVahomer-6.jpg" />
   </ItemGroup>
   <ItemGroup>
     <None Update="Images\KalVahomer-5.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Views\Home\Images\KalVahomer-5.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Remove="wwwroot\Images\.DS_Store" />
+    <Content Remove="wwwroot\Images\KalVahomer-1.jpg" />
+    <Content Remove="wwwroot\Images\KalVahomer-2.jpg" />
+    <Content Remove="wwwroot\Images\KalVahomer-3.jpg" />
+    <Content Remove="wwwroot\Images\KalVahomer-4.jpg" />
+    <Content Remove="wwwroot\Images\KalVahomer-5.jpg" />
+    <Content Remove="wwwroot\Images\KalVahomer-6.jpg" />
+    <Content Remove="wwwroot\Images\" />
   </ItemGroup>
 </Project>
