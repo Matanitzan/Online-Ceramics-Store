@@ -23,7 +23,7 @@ namespace Online_Ceramics_Store.Controllers
             using var connection = new MySqlConnection(_connectionString);
             await connection.OpenAsync();
 
-            using var command = new MySqlCommand("SELECT * FROM items;", connection);
+            using var command = new MySqlCommand("SELECT * FROM ITEMS;", connection);
             using var reader = await command.ExecuteReaderAsync();
             return View();
         }

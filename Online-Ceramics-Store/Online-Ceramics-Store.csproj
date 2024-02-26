@@ -15,18 +15,17 @@
   <ItemGroup>
     <None Remove="Views\ShoppingCart\" />
     <None Remove="Views\Products\" />
-    <None Remove="Views\Home\Images\" />
+    <None Remove="asset\" />
+    <None Remove="asset\Images\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\ShoppingCart\" />
     <Folder Include="Views\Products\" />
-    <Folder Include="Views\Home\Images\" />
+    <Folder Include="asset\" />
+    <Folder Include="asset\Images\" />
   </ItemGroup>
   <ItemGroup>
     <None Update="Images\KalVahomer-5.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Views\Home\Images\KalVahomer-5.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
