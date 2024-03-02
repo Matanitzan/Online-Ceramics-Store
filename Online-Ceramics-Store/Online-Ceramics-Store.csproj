@@ -15,11 +15,13 @@
   <ItemGroup>
     <None Remove="Views\ShoppingCart\" />
     <None Remove="Views\Products\" />
+    <None Remove="Views\Account\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\ShoppingCart\" />
     <Folder Include="Views\Products\" />
     <Folder Include="wwwroot\Images\" />
+    <Folder Include="Views\Account\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="wwwroot\Images\.DS_Store" />
