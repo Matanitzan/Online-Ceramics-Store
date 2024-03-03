@@ -3,6 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using System.Net;
+using System.Net.Mail;
+using Online_Ceramics_Store.Models;
+using System.Reflection;
+
+
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -18,8 +24,46 @@ namespace Online_Ceramics_Store.Controllers
 
         public IActionResult contact()
         {
+            ContactViewModel contact = new ContactViewModel();
+            return View("contact", contact);
+        }
+
+
+        [HttpPost]
+        public IActionResult SendMessage(ContactViewModel contact)
+        {
+
+            //if (ModelState.IsValid)
+            //{
+            //    return View("HomePage");
+            //}
+            //else
+            //{
+            //    return View("contact", contact);
+            //}
+            return View("contact", contact);
+
+            // If validation fails, return to the same view with validation errors
+        }
+
+        // Your utility method for email validation
+        private bool IsValidEmail(string email)
+        {
+            try
+            {
+                var mailAddress = new System.Net.Mail.MailAddress(email);
+                return mailAddress.Address == email;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+        public IActionResult faqs()
+        {
             return View();
         }
     }
+
 }
 

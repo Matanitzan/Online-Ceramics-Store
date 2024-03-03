@@ -33,6 +33,7 @@ namespace Online_Ceramics_Store.Controllers
             return View();
         }
         [Route("")]
+
         public IActionResult HomePage()
         {
             return View();
