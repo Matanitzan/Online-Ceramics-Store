@@ -3,10 +3,12 @@ using System.ComponentModel.DataAnnotations;
 namespace Online_Ceramics_Store.Models
 {
 	public class Customer
-	{
-		public Customer()
+    {
+
+        public Customer()
 		{
-		}
+
+        }
 		public int cust_id { get; set; }
 
         [Required]
