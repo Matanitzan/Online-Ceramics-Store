@@ -59,9 +59,7 @@ namespace Online_Ceramics_Store.Controllers
                         // User exists, store CUST_ID in session
                         int custId = Convert.ToInt32(result);
                         HttpContext.Session.SetInt32("cust_id", custId);
-                        var sessionValue = HttpContext.Session.GetInt32("cust_id");
-                        TempData["SessionValue"]=sessionValue;
-                        
+   
                         // Redirect to home page or any other authenticated page
            
                         return RedirectToAction("shop", "Products");

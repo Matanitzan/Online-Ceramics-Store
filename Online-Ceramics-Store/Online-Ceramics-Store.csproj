@@ -16,12 +16,14 @@
     <None Remove="Views\ShoppingCart\" />
     <None Remove="Views\Products\" />
     <None Remove="Views\Account\" />
+    <None Remove="Configuration\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\ShoppingCart\" />
     <Folder Include="Views\Products\" />
     <Folder Include="wwwroot\Images\" />
     <Folder Include="Views\Account\" />
+    <Folder Include="Configuration\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="wwwroot\Images\.DS_Store" />

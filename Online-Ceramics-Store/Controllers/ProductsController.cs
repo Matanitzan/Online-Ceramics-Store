@@ -21,6 +21,8 @@ namespace Online_Ceramics_Store.Controllers
         }
         public IActionResult shop()
         {
+            int cust_id = HttpContext.Session.GetInt32("cust_id") ?? 0;
+            ViewBag.CustId = cust_id;
             return View();
         }
     }
