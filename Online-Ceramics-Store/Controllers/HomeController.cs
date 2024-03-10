@@ -22,7 +22,6 @@ namespace Online_Ceramics_Store.Controllers
             // Database interaction code
             using var connection = new MySqlConnection(_connectionString);
             await connection.OpenAsync();
-
             using var command = new MySqlCommand("SELECT * FROM items;", connection);
             using var reader = await command.ExecuteReaderAsync();
             return View();
@@ -35,6 +34,7 @@ namespace Online_Ceramics_Store.Controllers
         [Route("")]
         public IActionResult HomePage()
         {
+
             return View();
         }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

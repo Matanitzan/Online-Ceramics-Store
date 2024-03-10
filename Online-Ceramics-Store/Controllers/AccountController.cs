@@ -28,6 +28,16 @@ namespace Online_Ceramics_Store.Controllers
         {
             return View();
         }
+        public IActionResult Logout()
+        {
+            int? custId = HttpContext.Session.GetInt32("cust_id");
+
+            if (custId.HasValue)
+            {
+                HttpContext.Session.Remove("cust_id");
+            }
+            return RedirectToAction("Index","Home");
+        }
 
         [Route("Login")]
         public IActionResult Login() {
