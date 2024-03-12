@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MySqlConnector;
 using Online_Ceramics_Store.Models;
+
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -32,10 +34,13 @@ namespace Online_Ceramics_Store.Controllers
         {
             int? custId = HttpContext.Session.GetInt32("cust_id");
 
-            if (custId.HasValue)
+            if (custId.HasValue || custId != -1)
             {
+                custId = -1;
+                HttpContext.Session.Remove("full_name");
                 HttpContext.Session.Remove("cust_id");
             }
+            HttpContext.Session.Clear();
             return RedirectToAction("Index","Home");
         }
 
@@ -58,30 +63,31 @@ namespace Online_Ceramics_Store.Controllers
             using (MySqlConnection connection = new MySqlConnection(_connectionString))
             {
                 connection.Open();
-                string query = "SELECT cust_id FROM USERS WHERE email = @email AND password = @password";
+                string query = "SELECT cust_id,full_name FROM USERS WHERE email = @email AND password = @password";
                 using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@email", email);
                     command.Parameters.AddWithValue("@password", password);
-                    object result = command.ExecuteScalar();
-                    if (result != null)
+                    using (MySqlDataReader reader = command.ExecuteReader())
                     {
-                        // User exists, store CUST_ID in session
-                        int custId = Convert.ToInt32(result);
-                        HttpContext.Session.SetInt32("cust_id", custId);
-   
-                        // Redirect to home page or any other authenticated page
-           
-                        return RedirectToAction("shop", "Products");
-                        
+                        if (reader.Read())
+                        {
+                            // User exists, store CUST_ID and full_name in session
+                            int custId = reader.GetInt32("cust_id");
+                            HttpContext.Session.SetInt32("cust_id", custId);
+                            string fullName = reader.GetString("full_name");
+                            HttpContext.Session.SetString("full_name", fullName);
+                            return RedirectToAction("shop", "Products");
+                        }
+                        else
+                        {
+                            // User does not exist or invalid credentials, handle accordingly
+                            // For example, display error message and return to login page
+                            ViewData["ErrorMessage"] = "Invalid email or password";
+                            return View("Login");
+                        }
                     }
-                    else
-                    {
-                        // User does not exist or invalid credentials, handle accordingly
-                        // For example, display error message and return to login page
-                        ViewData["ErrorMessage"] = "Invalid email or password";
-                        return View("Login");
-                    }
+                    
                 }
             }
         }
