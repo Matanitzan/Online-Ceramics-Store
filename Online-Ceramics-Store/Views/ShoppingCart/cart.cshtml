@@ -126,9 +126,6 @@
         <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 300px; background-color: #EDF1FF; ">
             <h1 class="font-weight-semi-bold text-uppercase mb-3">Shopping Cart</h1>
             <div class="d-inline-flex">
-                <p class="m-0"><a href="">Home</a></p>
-                <p class="m-0 px-2">-</p>
-                <p class="m-0">Shopping Cart</p>
             </div>
         </div>
     </div>
@@ -157,13 +154,14 @@
                                     <!-- Quantity input -->
                                     <div class="input-group quantity mx-auto" style="width: 100px;">
                                         <div class="input-group-btn">
-                                            <button class="btn btn-sm btn-primary btn-minus btn-block" style="background-color: #D19C97; border: hidden;">
+                                            <button class="btn btn-sm btn-primary btn-minus btn-block" style="background-color: #D19C97; border: hidden;" onclick="updateQuantity('@row["item_id"]', 'minus')">
                                                 <i class="fa fa-minus"></i>
                                             </button>
                                         </div>
-                                        <input type="text" class="form-control form-control-sm text-center" style="background-color: #EDF1FF;" value="@row["quantity"]">
+                                        <input id="quantity-@row["item_id"]" type="text" class="form-control form-control-sm text-center" style="background-color: #EDF1FF;" value="@row["quantity"]">
                                         <div class="input-group-btn">
-                                            <button class="btn btn-sm btn-primary btn-plus btn-block" style="background-color: #D19C97; border: hidden; ">
+                                            <button class="btn btn-sm btn-primary btn-
+                                                    plus btn-block" style="background-color: #D19C97; border: hidden; " onclick="updateQuantity('@row["item_id"]', 'plus')">
                                                 <i class="fa fa-plus"></i>
                                             </button>
                                         </div>
@@ -171,7 +169,11 @@
                                 </td>
                                 <!-- Calculate total -->
                                 <td class="align-middle">$@(Convert.ToDecimal(row["price"]) * Convert.ToDecimal(row["quantity"]))</td>
-                                <td class="align-middle "><button class="btn btn-sm btn-primary" style="background-color: #D19C97; border: hidden;"><i class="fa fa-times" style="background-color: #D19C97; border: hidden;"></i></button></td>
+                                <td class="align-middle">
+                                    <button class="btn btn-sm btn-primary remove-btn" style="background-color: #D19C97; border: hidden;" onclick="updateQuantity('@row["item_id"]', 'remove')">
+                                        <i class="fa fa-times"></i>
+                                    </button>
+                                </td>
                             </tr>
                         }
                     </tbody>
@@ -251,12 +253,47 @@
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
     <script src="lib/easing/easing.min.js"></script>
+
     <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+    <script>
+        function updateQuantity(itemId, operation) {
+            $.ajax({
+                url: '@Url.Action("UpdateCart", "ShoppingCart")',
+                type: 'POST',
+                data: { itemId: itemId, operation: operation },
+                success: function(response) {
+                    console.log('Request was successful');
+                    if (operation === 'remove') {
+                        // Remove the row from the table
+                        $('#quantity-' + itemId).closest('tr').remove();
+                    } else {
+                        // Update quantity in HTML
+                        var quantityElement = $('#quantity-' + itemId);
+                        if (quantityElement.length > 0) {
+                            var updatedQuantity = response.updatedQuantity;
+                            quantityElement.val(updatedQuantity);
+                            if (updatedQuantity === 0) {
+                                // Remove the row from the table if the quantity becomes 0
+                                quantityElement.closest('tr').remove();
+                            }
+                        }
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Request failed with status code: ' + status);
+                }
+            });
+        }
+    </script>
+
+    <script>function removeItem(button) {
+            var row = button.closest('tr'); // Get the closest parent <tr> element
+            row.remove(); // Remove the row from the table
+        }</script>
 
     <!-- Contact Javascript File -->
     <script src="mail/jqBootstrapValidation.min.js"></script>
     <script src="mail/contact.js"></script>
-
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
 </body>

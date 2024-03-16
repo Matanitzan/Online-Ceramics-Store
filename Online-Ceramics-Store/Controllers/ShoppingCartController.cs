@@ -9,6 +9,7 @@ using Online_Ceramics_Store.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using System.Text.Json;
+using static System.Net.Mime.MediaTypeNames;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -94,7 +95,7 @@ namespace Online_Ceramics_Store.Controllers
             {
                 // SQL command to select name, price, and calculate quantity from products table and the dictionary
 
-                string sqlQuery = "SELECT p.name, p.price, IFNULL(pd.quantity, 0) AS quantity " +
+                string sqlQuery = "SELECT p.name, p.price, p.item_id, IFNULL(pd.quantity, 0) AS quantity " +
                                   "FROM ITEMS p " +
                                   "LEFT JOIN (SELECT * FROM (";
 
@@ -110,32 +111,17 @@ namespace Online_Ceramics_Store.Controllers
                     sqlQuery += string.Join(" UNION ALL ", values);
 
                     // Completing the SQL query
-                    sqlQuery += ") AS temp) AS pd ON p.item_id = pd.item_id";
+                    sqlQuery += ") AS temp) AS pd ON p.item_id = pd.item_id having quantity!=0";
 
                     // Creating a SqlDataAdapter to execute the SQL query
                     using (MySqlDataAdapter adapter = new MySqlDataAdapter(sqlQuery, connection))
                     {
+                        Console.WriteLine(sqlQuery);
                         // Opening the connection and filling the DataTable with the result
                         connection.Open();
                         adapter.Fill(productsTable);
                     }
                 }
-
-
-                //sqlQuery += string.Join(" UNION ALL ", values);
-
-
-                // Completing the SQL query
-                //sqlQuery += ") AS temp) AS pd ON p.item_id = pd.item_id";
-
-
-                // Creating a SqlDataAdapter to execute the SQL query
-                //using (MySqlDataAdapter adapter = new MySqlDataAdapter(sqlQuery, connection))
-                //{
-                //    // Opening the connection and filling the DataTable with the result
-                //    connection.Open();
-                //    adapter.Fill(productsTable);
-                //}
             }
 
             // Returning the DataTable as a result
@@ -160,6 +146,104 @@ namespace Online_Ceramics_Store.Controllers
 
             };
             return View(cartModel);
+        }
+
+        [HttpPost]
+        public ActionResult UpdateCart(int itemId, string operation)
+        {
+            int flag = 0;
+            // Retrieve the ProductsCartModel from session
+            var json = HttpContext.Session.GetString("ShoppingCart");
+            var cartModel = JsonSerializer.Deserialize<ProductsCartModel>(json);
+
+            // Update quantity in ProductsCartModel
+            if (operation == "plus")
+            {
+                // Increment quantity
+                if (cartModel.productsDetailCart.ContainsKey(itemId))
+                {
+                    cartModel.productsDetailCart[itemId]++;
+                }
+                // Add new item to cart if it doesn't exist
+                else
+                {
+                    cartModel.productsDetailCart[itemId] = 1;
+                }
+            }
+            else if (operation == "minus")
+            {
+                // Decrement quantity
+                if (cartModel.productsDetailCart.ContainsKey(itemId) && cartModel.productsDetailCart[itemId] > 1)
+                {
+                    cartModel.productsDetailCart[itemId]--;
+                }
+                // Remove item if quantity is 1 or less
+                else if (cartModel.productsDetailCart.ContainsKey(itemId) && cartModel.productsDetailCart[itemId] == 1)
+                {
+                    flag = 1;
+                    cartModel.productsDetailCart.Remove(itemId);
+                }
+            }
+            else if (operation == "remove")
+            {
+                if (cartModel.productsDetailCart.ContainsKey(itemId))
+                {
+                    flag = 1;
+                    cartModel.productsDetailCart.Remove(itemId);
+                }
+            }
+
+            // Update session variable
+            var json1 = JsonSerializer.Serialize(cartModel);
+            // Store the JSON string in the session
+            HttpContext.Session.SetString("ShoppingCart", json1);
+
+            // Update database only if the user is registered
+            try
+            {
+                using (var connection = new MySqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    // SQL query to update quantity in CART_PROD table
+                    string query = "UPDATE CART_PROD SET quantity = @quantity WHERE item_id = @item_id and cust_id=0";
+                    if (flag == 1)
+                    {
+                        query = "DELETE FROM CART_PROD WHERE item_id = @item_id and cust_id=0";
+                    }
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        if (flag == 0)
+                        {
+                            command.Parameters.AddWithValue("@quantity", cartModel.productsDetailCart[itemId]);
+                        }
+                        // Add parameters to the SQL query
+                        command.Parameters.AddWithValue("@item_id", itemId);
+
+                        // Execute the SQL command
+                        int rowsAffected = command.ExecuteNonQuery();
+
+                        if (rowsAffected > 0)
+                        {                            
+                            // Update successful
+                            TempData["Message"] = "Quantity updated successfully.";
+                        }
+                        else
+                        {
+                            // No rows affected, possibly product not found
+                            TempData["ErrorMessage"] = "Failed to update quantity. Product may not exist.";
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "An error occurred while updating quantity: " + ex.Message;
+            }
+            int updatedQuantity = cartModel.productsDetailCart.ContainsKey(itemId)
+        ? cartModel.productsDetailCart[itemId]
+        : 0;
+            //return RedirectToAction("cart", "ShoppingCart");
+            return Json(new { success = true, updatedQuantity });
         }
 
         public IActionResult checkout()
