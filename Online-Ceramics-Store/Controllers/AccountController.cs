@@ -34,9 +34,9 @@ namespace Online_Ceramics_Store.Controllers
         {
             int? custId = HttpContext.Session.GetInt32("cust_id");
 
-            if (custId.HasValue || custId != -1)
+            if (custId!=null|| custId != -1)
             {
-                custId = -1;
+                //custId = -1;
                 HttpContext.Session.Remove("full_name");
                 HttpContext.Session.Remove("cust_id");
             }
