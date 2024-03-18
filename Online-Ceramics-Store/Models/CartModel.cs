@@ -9,4 +9,3 @@ namespace Online_Ceramics_Store.Models
         public decimal Subtotal { get; set; } 
     }
 }
-

@@ -246,6 +246,36 @@ namespace Online_Ceramics_Store.Controllers
             return Json(new { success = true, updatedQuantity });
         }
 
+
+        [HttpGet]
+        public ActionResult<int> GetStockQuantity(int itemId)
+        {
+            int stockQuantity = 0;
+            try
+            {
+                using (var connection = new MySqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    string query = "SELECT stock_quantity FROM ITEMS WHERE item_id = @itemId";
+                    using (var command = new MySqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@itemId", itemId);
+                        var result = command.ExecuteScalar();
+                        if (result != null && result != DBNull.Value)
+                        {
+                            stockQuantity = Convert.ToInt32(result);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error retrieving stock quantity: " + ex.Message);
+            }
+            return stockQuantity;
+        }
+
+
         public IActionResult checkout()
         {
             return View();

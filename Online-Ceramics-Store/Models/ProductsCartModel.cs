@@ -15,5 +15,4 @@ namespace Online_Ceramics_Store.Models
             productsDetailCart = new Dictionary<int, int>();
         }
     }
-}
-
+} 

@@ -258,29 +258,42 @@
     <script>
         function updateQuantity(itemId, operation) {
             $.ajax({
-                url: '@Url.Action("UpdateCart", "ShoppingCart")',
-                type: 'POST',
-                data: { itemId: itemId, operation: operation },
-                success: function(response) {
-                    console.log('Request was successful');
-                    if (operation === 'remove') {
-                        // Remove the row from the table
-                        $('#quantity-' + itemId).closest('tr').remove();
-                    } else {
-                        // Update quantity in HTML
-                        var quantityElement = $('#quantity-' + itemId);
-                        if (quantityElement.length > 0) {
-                            var updatedQuantity = response.updatedQuantity;
-                            quantityElement.val(updatedQuantity);
-                            if (updatedQuantity === 0) {
-                                // Remove the row from the table if the quantity becomes 0
-                                quantityElement.closest('tr').remove();
-                            }
-                        }
+                url: '@Url.Action("GetStockQuantity", "ShoppingCart")', // Create a new action to retrieve stock quantity
+                type: 'GET',
+                data: { itemId: itemId },
+                success: function(stockQuantity) {
+                    console.log('Stock quantity received: ' + stockQuantity);
+                    // Check if the operation is 'plus' and requested quantity exceeds available stock
+                    if (operation === 'plus' && stockQuantity <= parseInt($('#quantity-' + itemId).val())) {
+                        alert('Requested quantity exceeds available stock.');
+                        return; // Prevent further execution
                     }
+
+                    // Proceed with the update if no validation issues
+                    $.ajax({
+                        url: '@Url.Action("UpdateCart", "ShoppingCart")',
+                        type: 'POST',
+                        data: { itemId: itemId, operation: operation },
+                        success: function(response) {
+                            console.log('Request was successful');
+                            // Update quantity in HTML
+                            var quantityElement = $('#quantity-' + itemId);
+                            if (quantityElement.length > 0) {
+                                var updatedQuantity = response.updatedQuantity;
+                                quantityElement.val(updatedQuantity);
+                                if (updatedQuantity === 0) {
+                                    // Remove the row from the table if the quantity becomes 0
+                                    quantityElement.closest('tr').remove();
+                                }
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Request failed with status code: ' + status);
+                        }
+                    });
                 },
                 error: function(xhr, status, error) {
-                    console.error('Request failed with status code: ' + status);
+                    console.error('Failed to retrieve stock quantity with status code: ' + status);
                 }
             });
         }
