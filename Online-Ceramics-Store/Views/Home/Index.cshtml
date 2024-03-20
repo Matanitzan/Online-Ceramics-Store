@@ -1,4 +1,4 @@
-﻿@{
+﻿@*@{
     ViewData["Title"] = "Home Page";
 }
 
@@ -6,3 +6,18 @@
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>
+BOO
+@model List<Online_Ceramics_Store.Models.Product>
+
+<h2>Products</h2>
+
+<ul>
+    @foreach (var product in Model)
+    {
+        <li>@product.Name</li>
+        <li>@product.ProId</li>
+        <li>@product.Dep</li>
+        <li>@product.Brand</li>
+    }
+</ul>
+*@
