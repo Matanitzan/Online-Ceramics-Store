@@ -36,7 +36,7 @@
     <div class="container-fluid">
         <div class="row border-top px-xl-5">
             <div class="col-lg-3 d-none d-lg-block">
-                <a class="btn shadow-none d-flex align-items-center justify-content-between bg-primary text-white w-100" data-toggle="collapse" href="#navbar-vertical" style="height: 65px; margin-top: -1px; padding: 0 30px;">
+                <a class="btn shadow-none d-flex align-items-center justify-content-between text-white w-100" data-toggle="collapse" href="#navbar-vertical" style="height: 85px; background-color: #d19c97; margin-top: -1px; padding: 0 30px;">
                     <h6 class="m-0">Categories</h6>
                     <i class="fa fa-angle-down text-dark"></i>
                 </a>
@@ -53,25 +53,21 @@
             </div>
             <div class="col-lg-9 row align-items-center py-3 px-xl-5">
                 <div class="col-lg-6 col-6 text-left">
-                    <form action="">
+                    <form action="@Url.Action("SearchProducts", "Products")" method="post">
                         <div class="input-group">
-                            <input type="text" class="form-control" placeholder="Search for products">
-                            <div class="input-group-append">
-                                <span class="input-group-text bg-transparent text-primary">
-                                    <i class="fa fa-search"></i>
-                                </span>
-                            </div>
+                            <input type="text" class="form-control" name="searchString" placeholder="Search for products">
+                            <button type="submit" class="btn" style="background-color: #d19c97;">Search</button>
                         </div>
                     </form>
                 </div>
                 <div class="col-lg-3 col-6 text-right">
                     <div class="d-flex justify-content-end">
                         <a href="" class="btn border">
-                            <i class="fas fa-heart text-primary"></i>
+                            <i class="fas fa-heart text"></i>
                             <span class="badge">0</span>
                         </a>
-                        <a href="" class="btn border">
-                            <i class="fas fa-shopping-cart text-primary"></i>
+                        <a href="@Url.Action("cart", "ShoppingCart")" class="btn border">
+                            <i class="fas fa-shopping-cart text"></i>
                             <span class="badge">0</span>
                         </a>
                     </div>
@@ -88,39 +84,13 @@
                 <!-- Price Start -->
                 <div class="border-bottom mb-4 pb-4">
                     <h5 class="font-weight-semi-bold mb-4">Filter by price:</h5>
-                    <form>
-                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                            <input type="checkbox" class="custom-control-input" checked id="price-all">
-                            <label class="custom-control-label" for="price-all">All Price</label>
-                            <span class="badge border font-weight-normal">1000</span>
-                        </div>
-                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                            <input type="checkbox" class="custom-control-input" id="price-1">
-                            <label class="custom-control-label" for="price-1">$0 - $100</label>
-                            <span class="badge border font-weight-normal">150</span>
-                        </div>
-                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                            <input type="checkbox" class="custom-control-input" id="price-2">
-                            <label class="custom-control-label" for="price-2">$100 - $200</label>
-                            <span class="badge border font-weight-normal">295</span>
-                        </div>
-                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                            <input type="checkbox" class="custom-control-input" id="price-3">
-                            <label class="custom-control-label" for="price-3">$200 - $300</label>
-                            <span class="badge border font-weight-normal">246</span>
-                        </div>
-                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                            <input type="checkbox" class="custom-control-input" id="price-4">
-                            <label class="custom-control-label" for="price-4">$300 - $400</label>
-                            <span class="badge border font-weight-normal">145</span>
-                        </div>
-                        <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between">
-                            <input type="checkbox" class="custom-control-input" id="price-5">
-                            <label class="custom-control-label" for="price-5">$400 - $500</label>
-                            <span class="badge border font-weight-normal">168</span>
-                        </div>
+                    <form class="d-flex align-items-center" action="@Url.Action("fillterByPrice", "Products")" method="post">
+                        <input type="number" name="filterPriceMin" placeholder="Min Price" class="form-control mr-2">
+                        <input type="number" name="filterPriceMax" placeholder="Max Price" class="form-control mr-2">
+                        <button type="submit" class="btn" style="background-color: #d19c97;">Filter</button>
                     </form>
                 </div>
+
                 <!-- Price End -->
             </div>
             <!-- Shop Sidebar End -->
@@ -141,8 +111,8 @@
                                     </div>
                                 </div>
                                 <div class="card-footer d-flex justify-content-between bg-light border">
-                                    <a href="" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
-                                    <a href="" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</a>
+                                    <a href="@Url.Action("detail", "Products",product)" class="btn btn-sm text-dark p-0"><i class="fas fa-eye  mr-1"></i>View Detail</a>
+                                    <a href="" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart mr-1"></i>Add To Cart</a>
                                 </div>
                             </div>
                         </div>
