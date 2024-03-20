@@ -1,10 +1,12 @@
 ﻿using MySqlConnector;
+using Microsoft.AspNetCore.Http;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddMySqlDataSource(builder.Configuration.GetConnectionString("Default")!);
+builder.Services.AddSession(); // Add session support
 
 var app = builder.Build();
 
@@ -19,9 +21,10 @@ app.UseRouting();
 
 app.UseAuthorization();
 
+app.UseSession(); // Use session middleware
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
-
