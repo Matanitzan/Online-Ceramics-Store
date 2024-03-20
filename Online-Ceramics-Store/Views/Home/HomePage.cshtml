@@ -57,9 +57,27 @@
             </div>
         </div>
         <div class="row align-items-center py-3 px-xl-10">
-            <div class="col-lg-20 d-none d-lg-block">
+            <div class="col-lg-4 d-none d-lg-block text-lg-left text-center mb-lg-0 mb-3">
                 <a href="@Url.Action("HomePage", "Home")" class="text-decoration-none">
-                    <h1 class="m-0 display-5 font-weight-semi-bold text-dark px-2" style="font-weight:900">Kal Vahomer</h1>
+                    <h1 class="m-0 display-5 font-weight-semi-bold" style="color: black;">Kal Vahomer</h1>
+                </a>
+            </div>
+            <div class="col-lg-4 col-8 text-center mb-lg-0 mb-3">
+                <form action="">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search for products">
+                        <div class="input-group-append">
+                            <span class="input-group-text bg-transparent text-primary">
+                                <i class="fa fa-search" style="color: #D19C97;"></i>
+                            </span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="col-lg-4 col-4 text-lg-right text-center">
+                <a href="@Url.Action("cart", "ShoppingCart")" class="btn border">
+                    <i class="fas fa-shopping-cart" style="color: #D19C97;"></i>
+                    <span class="badge">0</span>
                 </a>
             </div>
         </div>

@@ -34,11 +34,11 @@
         <div class="row py-2 px-xl-5" style="background-color: #EDF1FF;">
             <div class="col-lg-6 d-none d-lg-block">
                 <div class="d-inline-flex align-items-center">
-                    <a class="text-dark" href="">FAQs</a>
+                    <a class="text-dark" href="@Url.Action("faqs", "Reference")">FAQs</a>
                     <span class="text-muted px-2">|</span>
-                    <a class="text-dark" href="">Help</a>
+                    <a class="text-dark" href="@Url.Action("Contact", "Reference")">Help</a>
                     <span class="text-muted px-2">|</span>
-                    <a class="text-dark" href="">Support</a>
+                    <a class="text-dark" href="@Url.Action("Contact", "Reference")">Support</a>
                 </div>
             </div>
             <div class="col-lg-6 text-center text-lg-right">
@@ -54,7 +54,7 @@
         </div>
         <div class="row align-items-center py-3 px-xl-5">
             <div class="col-lg-3 d-none d-lg-block">
-                <a href="" class="text-decoration-none">
+                <a href="@Url.Action("HomePage", "Home")" class="text-decoration-none">
                     <h1 class="m-0 display-5 font-weight-semi-bold" style="color: black;">Kal Vahomer</h1>
                 </a>
             </div>
@@ -71,10 +71,6 @@
                 </form>
             </div>
             <div class="col-lg-3 col-6 text-right">
-                <a href="" class="btn border">
-                    <i class="fas fa-heart" style="color: #D19C97;"></i>
-                    <span class="badge">0</span>
-                </a>
                 <a href="" class="btn border">
                     <i class="fas fa-shopping-cart" style="color: #D19C97;"></i>
                     <span class="badge">0</span>
