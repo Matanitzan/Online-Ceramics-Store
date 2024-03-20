@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.Data;
+using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using MySqlConnector;
 using Online_Ceramics_Store.Models;
@@ -9,7 +10,6 @@ namespace Online_Ceramics_Store.Controllers
     {
         private IConfiguration _configuraion;
         private readonly string _connectionString = "";
-
 
         public HomeController( IConfiguration configuration)
         {
@@ -32,6 +32,7 @@ namespace Online_Ceramics_Store.Controllers
             return View();
         }
         [Route("")]
+
         public IActionResult HomePage()
         {
 

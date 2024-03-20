@@ -1,0 +1,326 @@
+﻿@{
+    ViewData["Title"] = "FAQs - Kal Vahomer Ceramics";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>FAQs - Kal Vahomer Ceramics</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Free HTML Templates" name="keywords">
+    <meta content="Free HTML Templates" name="description">
+    <!-- Favicon -->
+    <link href="img/favicon.ico" rel="icon">
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="css/style.css" rel="stylesheet">
+
+    <!-- Custom Styles -->
+    <style>
+        /* Add your custom styles here */
+
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+
+        /* Add more custom styles as needed */
+
+        .faq-section {
+            background-color: #F2F2F2;
+            padding: 50px 0;
+        }
+
+        .faq-card {
+            border: 0;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+
+            .faq-card .card-header {
+                background-color: #D19C97;
+                color: #fff;
+                padding: 15px;
+                border: 0;
+                border-radius: 15px;
+            }
+
+            .faq-card .card-body {
+                padding: 20px;
+            }
+
+            .faq-card button {
+                color: #D19C97;
+                font-weight: bold;
+                text-decoration: none;
+                cursor: pointer;
+                background-color: transparent;
+                border: none;
+            }
+
+                .faq-card button:hover {
+                    text-decoration: underline;
+                }
+    </style>
+</head>
+
+<body>
+    <!-- Topbar and Navbar (you can reuse from your homepage) -->
+    <!-- Topbar Start -->
+    <div class="container-fluid">
+        <div class="row py-2 px-xl-5" style="background-color: #EDF1FF;">
+            <div class="col-lg-6 d-none d-lg-block">
+                <div class="d-inline-flex align-items-center">
+                    <a class="text-dark" href="@Url.Action("faqs", "Reference")">FAQs</a>
+                    <span class="text-muted px-2">|</span>
+                    <a class="text-dark" href="@Url.Action("Contact", "Reference")">Help</a>
+                    <span class="text-muted px-2">|</span>
+                    <a class="text-dark" href="@Url.Action("Contact", "Reference")">Support</a>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center text-lg-right">
+                <div class="d-inline-flex align-items-center">
+                    <a class="text-dark px-2" href="">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+                    <a class="text-dark px-2" href="">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="row align-items-center py-3 px-xl-10">
+            <div class="col-lg-4 d-none d-lg-block text-lg-left text-center mb-lg-0 mb-3">
+                <a href="@Url.Action("HomePage", "Home")" class="text-decoration-none">
+                    <h1 class="m-0 display-5 font-weight-semi-bold" style="color: black;">Kal Vahomer</h1>
+                </a>
+            </div>
+            <div class="col-lg-4 col-8 text-center mb-lg-0 mb-3">
+                <form action="">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search for products">
+                        <div class="input-group-append">
+                            <span class="input-group-text bg-transparent text-primary">
+                                <i class="fa fa-search" style="color: #D19C97;"></i>
+                            </span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="col-lg-4 col-4 text-lg-right text-center">
+                <a href="@Url.Action("cart", "ShoppingCart")" class="btn border">
+                    <i class="fas fa-shopping-cart" style="color: #D19C97;"></i>
+                    <span class="badge">0</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    <!-- Topbar End -->
+    <!-- Navbar Start -->
+    <div class="container-fluid">
+        <div class="row border-top px-xl-5">
+            <div class="col-lg-9">
+                <nav class="navbar navbar-expand-lg bg-light navbar-light py-3 py-lg-0 px-0">
+                    <a href="" class="text-decoration-none d-block d-lg-none">
+                        <h1 class="m-0 display-5 font-weight-semi-bold"><span class="text-primary font-weight-bold border px-3 mr-1"></span>Kal Vahomer</h1>
+                    </a>
+                    <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
+                        <div class="navbar-nav mr-auto py-0">
+                            <a href="@Url.Action("HomePage", "Home")" class="nav-item nav-link active">Home</a>
+                            <a href="@Url.Action("shop", "Products")" class="nav-item nav-link">Shop</a>
+                            <a href="Profile.html" class="nav-item nav-link">Profile</a>
+                        </div>
+                        <div class="navbar-nav ml-auto py-0">
+                            <a href="" class="nav-item nav-link">Login</a>
+                            <a href="" class="nav-item nav-link">Register</a>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <!-- Navbar End -->
+    <div class="container-fluid faq-section">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="text-center mb-4">
+                    <h2 class="section-title px-5"><span class="px-2">Frequently Asked Questions</span></h2>
+                </div>
+                <div id="faqAccordion">
+
+                    <!-- FAQ 1 -->
+                    <div class="card faq-card">
+                        <div class="card-header" id="faqHeading1">
+                            <h5 class="mb-0">
+                                <span class="faq-question" data-toggle="collapse" data-target="#faqCollapse1" aria-expanded="true" aria-controls="faqCollapse1">
+                                    What types of ceramic products do you offer?
+                                </span>
+                            </h5>
+                        </div>
+
+                        <div id="faqCollapse1" class="collapse show" aria-labelledby="faqHeading1" data-parent="#faqAccordion">
+                            <div class="card-body">
+                                We offer a variety of ceramic products including bowl plates, bottle jugs, vases, mugs, crock pots, and accessories.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FAQ 2 -->
+                    <div class="card faq-card">
+                        <div class="card-header" id="faqHeading2">
+                            <h5 class="mb-0">
+                                <span class="faq-question" data-toggle="collapse" data-target="#faqCollapse2" aria-expanded="true" aria-controls="faqCollapse2">
+                                    How can I place an order?
+                                </span>
+                            </h5>
+                        </div>
+
+                        <div id="faqCollapse2" class="collapse show" aria-labelledby="faqHeading2" data-parent="#faqAccordion">
+                            <div class="card-body">
+                                You can place an order by visiting our online shop, selecting the desired products, and following the checkout process.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FAQ 3 -->
+                    <div class="card faq-card">
+                        <div class="card-header" id="faqHeading3">
+                            <h5 class="mb-0">
+                                <span class="faq-question" data-toggle="collapse" data-target="#faqCollapse3" aria-expanded="true" aria-controls="faqCollapse3">
+                                    Is shipping available internationally?
+                                </span>
+                            </h5>
+                        </div>
+
+                        <div id="faqCollapse3" class="collapse show" aria-labelledby="faqHeading3" data-parent="#faqAccordion">
+                            <div class="card-body">
+                                Yes, we provide international shipping. Shipping costs may vary depending on the destination.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FAQ 4 -->
+                    <div class="card faq-card">
+                        <div class="card-header" id="faqHeading4">
+                            <h5 class="mb-0">
+                                <span class="faq-question" data-toggle="collapse" data-target="#faqCollapse4" aria-expanded="true" aria-controls="faqCollapse4">
+                                    What payment methods do you accept?
+                                </span>
+                            </h5>
+                        </div>
+
+                        <div id="faqCollapse4" class="collapse show" aria-labelledby="faqHeading4" data-parent="#faqAccordion">
+                            <div class="card-body">
+                                We accept a variety of payment methods, including credit/debit cards, PayPal, and other secure online payment options.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FAQ 6 -->
+                    <div class="card faq-card">
+                        <div class="card-header" id="faqHeading6">
+                            <h5 class="mb-0">
+                                <span class="faq-question" data-toggle="collapse" data-target="#faqCollapse6" aria-expanded="true" aria-controls="faqCollapse6">
+                                    How can I track my order?
+                                </span>
+                            </h5>
+                        </div>
+
+                        <div id="faqCollapse6" class="collapse show" aria-labelledby="faqHeading6" data-parent="#faqAccordion">
+                            <div class="card-body">
+                                You can track your order by logging into your account and navigating to the order tracking section. Alternatively, you'll receive a tracking number via email.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FAQ 7 -->
+                    <div class="card faq-card">
+                        <div class="card-header" id="faqHeading7">
+                            <h5 class="mb-0">
+                                <span class="faq-question" data-toggle="collapse" data-target="#faqCollapse7" aria-expanded="true" aria-controls="faqCollapse7">
+                                    Do you offer gift wrapping services?
+                                </span>
+                            </h5>
+                        </div>
+
+                        <div id="faqCollapse7" class="collapse show" aria-labelledby="faqHeading7" data-parent="#faqAccordion">
+                            <div class="card-body">
+                                Yes, we provide gift wrapping services. You can select this option during the checkout process.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FAQ 8 -->
+                    <div class="card faq-card">
+                        <div class="card-header" id="faqHeading8">
+                            <h5 class="mb-0">
+                                <span class="faq-question" data-toggle="collapse" data-target="#faqCollapse8" aria-expanded="true" aria-controls="faqCollapse8">
+                                    How can I contact customer support?
+                                </span>
+                            </h5>
+                        </div>
+
+                        <div id="faqCollapse8" class="collapse show" aria-labelledby="faqHeading8" data-parent="#faqAccordion">
+                            <div class="card-body">
+                                You can contact our customer support team through our <a href="@Url.Action("Contact", "Reference")">contact page</a>. We'll be happy to assist you.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FAQ 9 -->
+                    <div class="card faq-card">
+                        <div class="card-header" id="faqHeading9">
+                            <h5 class="mb-0">
+                                <span class="faq-question" data-toggle="collapse" data-target="#faqCollapse9" aria-expanded="true" aria-controls="faqCollapse9">
+                                    Are your ceramic products dishwasher safe?
+                                </span>
+                            </h5>
+                        </div>
+
+                        <div id="faqCollapse9" class="collapse show" aria-labelledby="faqHeading9" data-parent="#faqAccordion">
+                            <div class="card-body">
+                                Yes, our ceramic products are dishwasher safe. However, it's recommended to check the care instructions for each specific product.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FAQ 10 -->
+                    <div class="card faq-card">
+                        <div class="card-header" id="faqHeading10">
+                            <h5 class="mb-0">
+                                <span class="faq-question" data-toggle="collapse" data-target="#faqCollapse10" aria-expanded="true" aria-controls="faqCollapse10">
+                                    Can I customize the colors of the ceramic items?
+                                </span>
+                            </h5>
+                        </div>
+
+                        <div id="faqCollapse10" class="collapse show" aria-labelledby="faqHeading10" data-parent="#faqAccordion">
+                            <div class="card-body">
+                                Currently, we offer a selection of predefined colors for our ceramic items. Customization options may be available in the future.
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-primary back-to-top" style="background-color: #D19C97; border: hidden;"><i class="fa fa-angle-double-up"></i></a>
+
+</body>
+
+</html>
