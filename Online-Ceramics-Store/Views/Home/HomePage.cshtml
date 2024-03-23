@@ -34,29 +34,8 @@
 <body>
     <!-- Topbar Start -->
     <div class="container-fluid">
-        <div class="row bg-secondary py-2 px-xl-5">
-            <div class="col-lg-6 d-none d-lg-block">
-                <div class="d-inline-flex align-items-center">
-                    <a class="text-dark" href="@Url.Action("faqs", "Reference")">FAQs</a>
-                    <span class="text-muted px-2">|</span>
-                    <a class="text-dark" href="@Url.Action("Contact", "Reference")">Help</a>
-                    <span class="text-muted px-2">|</span>
-                    <a class="text-dark" href="@Url.Action("Contact", "Reference")">Support</a>
-
-                </div>
-            </div>
-            <div class="col-lg-6 text-center text-lg-right">
-                <div class="d-inline-flex align-items-center">
-                    <a class="text-dark px-2" href="">
-                        <i class="fab fa-facebook-f"></i>
-                    </a>
-                    <a class="text-dark px-2" href="">
-                        <i class="fab fa-instagram"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-        <div class="row align-items-center py-3 px-xl-10">
+        
+        @*<div class="row align-items-center py-3 px-xl-10">
             <div class="col-lg-4 d-none d-lg-block text-lg-left text-center mb-lg-0 mb-3">
                 <a href="@Url.Action("HomePage", "Home")" class="text-decoration-none">
                     <h1 class="m-0 display-5 font-weight-semi-bold" style="color: black;">Kal Vahomer</h1>
@@ -80,7 +59,7 @@
                     <span class="badge">0</span>
                 </a>
             </div>
-        </div>
+        </div>*@
 
     </div>
     <!-- Topbar End -->
@@ -96,10 +75,10 @@
                 </a>
                 <nav class="collapse show navbar navbar-vertical navbar-light align-items-start p-0 border border-top-0 border-bottom-0" id="navbar-vertical">
                     <div class="navbar-nav w-100 overflow-hidden" style="height: 410px">
-                        <a href="" class="nav-item nav-link">Bowls</a>
-                        <a href="" class="nav-item nav-link">Clay pots</a>
-                        <a href="" class="nav-item nav-link">Jugs</a>
-                        <a href="" class="nav-item nav-link">Cups</a>
+                        <a href="@Url.Action("fillterProductShop", "Products",new { category = 1 })" class="nav-item nav-link">Bowls</a>
+                        <a href="@Url.Action("fillterProductShop", "Products",new { category = 2 })" class="nav-item nav-link">Clay pots</a>
+                        <a href="@Url.Action("fillterProductShop", "Products",new { category = 3 })" class="nav-item nav-link">Jugs</a>
+                        <a href="@Url.Action("fillterProductShop", "Products",new { category = 4 })" class="nav-item nav-link">Cups</a>
                     </div>
                 </nav>
             </div>
@@ -111,17 +90,7 @@
                     <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
                         <span class="navbar-toggler-icon"></span>
                     </button>
-                    <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
-                        <div class="navbar-nav mr-auto py-0">
-                            <a href="index.html" class="nav-item nav-link active">Home</a>
-                            <a href="@Url.Action("shop", "Products")" class="nav-item nav-link">Shop</a>
-                            <a href="Profile.html" class="nav-item nav-link">Profile</a>
-                        </div>
-                        <div class="navbar-nav ml-auto py-0">
-                            <a href="" class="nav-item nav-link">Login</a>
-                            <a href="" class="nav-item nav-link">Register</a>
-                        </div>
-                    </div>
+                    
                 </nav>
                 <div id="header-carousel" class="carousel slide" data-ride="carousel">
                     <div class="carousel-inner">
@@ -212,7 +181,7 @@
                         </div>
                     </div>
                     <div class="card-footer d-flex justify-content-between bg-light border">
-                        <a href="" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
+                        <a href="@Url.Action("detailByName", "Products",new { nameDetail = "Terracotta Pot Set"})" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
                         <a href="" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</a>
                     </div>
                 </div>
@@ -229,7 +198,7 @@
                         </div>
                     </div>
                     <div class="card-footer d-flex justify-content-between bg-light border">
-                        <a href="" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
+                        <a href="@Url.Action("detailByName", "Products",new { nameDetail = "Espresso Cup"})" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
                         <a href="" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</a>
                     </div>
                 </div>
@@ -246,7 +215,7 @@
                         </div>
                     </div>
                     <div class="card-footer d-flex justify-content-between bg-light border">
-                        <a href="" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
+                        <a href="@Url.Action("detailByName", "Products",new { nameDetail = "Set of 4 Ceramic Soup Bowls"})" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
                         <a href="" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</a>
                     </div>
                 </div>
@@ -263,7 +232,7 @@
                         </div>
                     </div>
                     <div class="card-footer d-flex justify-content-between bg-light border">
-                        <a href="" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
+                        <a href="@Url.Action("detailByName", "Products",new { nameDetail = "Large Ceramic Travel Mug"})" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
                         <a href="" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</a>
                     </div>
                 </div>

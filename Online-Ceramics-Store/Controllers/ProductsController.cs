@@ -25,6 +25,43 @@ namespace Online_Ceramics_Store.Controllers
         {
             return View();
         }
+        public IActionResult detailByName(string nameDetail)
+        {
+            Product product = null;
+            using (MySqlConnection connection = new MySqlConnection(_connectionString))
+            {
+                connection.Open();
+                string query = "SELECT * FROM ITEMS WHERE name = @nameDetail";
+                using (MySqlCommand command = new MySqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@nameDetail", nameDetail);
+                    using (MySqlDataReader reader = command.ExecuteReader())
+                    {
+                            if(reader.Read())
+                            {
+                                product = new Product()
+                                {
+                                    item_id = reader.GetInt32("item_id"),
+                                    name = reader.GetString("name"),
+                                    description = reader.GetString("description"),
+                                    information = reader.GetString("information"),
+                                    stock_quantity = reader.GetInt32("stock_quantity"),
+                                    category_id = reader.GetInt32("category_id"),
+                                    insale = reader.GetInt32("insale"),
+                                    percent = reader.GetInt32("percent"),
+                                    price = reader.GetInt32("price"),
+                                };
+                            }
+                            
+                        
+                    }
+                }
+
+            }
+            return RedirectToAction("detail", product);
+            
+
+        }
         public IActionResult detail(Product product)
         {
             int? cust_id = HttpContext.Session.GetInt32("cust_id");
