@@ -49,6 +49,32 @@ namespace Online_Ceramics_Store.Controllers
             string? full_name = HttpContext.Session.GetString("full_name");
             ViewBag.CustId = cust_id;
             ViewBag.FullName = full_name;
+            Customer customer= null;
+            using (MySqlConnection connection = new MySqlConnection(_connectionString))
+            {
+                connection.Open();
+                string query = "SELECT * FROM USERS WHRER cust_id = @cust_id ";
+                using (MySqlCommand command = new MySqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@cust_id", cust_id);
+                    using (MySqlDataReader reader = command.ExecuteReader())
+                    {
+                        if(reader.Read())
+                        {
+                            customer = new Customer()
+                            {
+                                cust_id = reader.GetInt32("cust_id"),
+                                full_name = reader.GetString("full_name"),
+                                email= reader.GetString("email"),
+                                password= reader.GetString("password"),
+                                phone = reader.GetString("phone"),
+                                city = reader.GetString("city"),
+                                address= reader.GetString("address"),
+                            };
+                        }
+                    }
+                }
+            }
             return View();
         }
         [Route("Login")]
