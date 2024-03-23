@@ -43,7 +43,14 @@ namespace Online_Ceramics_Store.Controllers
             HttpContext.Session.Clear();
             return RedirectToAction("Index","Home");
         }
-
+        public IActionResult Profile()
+        {
+            int? cust_id = HttpContext.Session.GetInt32("cust_id");
+            string? full_name = HttpContext.Session.GetString("full_name");
+            ViewBag.CustId = cust_id;
+            ViewBag.FullName = full_name;
+            return View();
+        }
         [Route("Login")]
         public IActionResult Login() {
             return View();
