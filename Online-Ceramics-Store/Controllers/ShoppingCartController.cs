@@ -75,7 +75,6 @@ namespace Online_Ceramics_Store.Controllers
                 productsDetailCart = productsDetailCart
             };
             
-
             var json1 = JsonSerializer.Serialize(test);
 
             // Store the JSON string in the session
@@ -132,9 +131,8 @@ namespace Online_Ceramics_Store.Controllers
             return productsTable;
         }
 
-        public IActionResult cart()
+        private CartModel GetCartModel()
         {
-            // Retrieve the DataTable with product data
             DataTable productsTable = GetProductsFromCart();
             decimal subtotal = 0;
             if (productsTable == null || productsTable.Rows.Count == 0)
@@ -152,8 +150,22 @@ namespace Online_Ceramics_Store.Controllers
                     subtotal += Convert.ToDecimal(row["quantity"]) * Convert.ToDecimal(row["price"]) - (Convert.ToDecimal(row["quantity"]) * Convert.ToDecimal(row["price"]) * Convert.ToDecimal(row["percent"]) / 100);
                 }
             }
-            cartModel.Products = productsTable;
-            cartModel.Subtotal = subtotal;
+
+
+            CartModel cartModel = new CartModel
+            {
+                Products = productsTable,
+                Subtotal = subtotal
+            };
+            
+            return cartModel;
+        }
+
+
+        public IActionResult cart()
+        {
+
+            cartModel = GetCartModel();
             //TempData["CartModel"] = cartModel;
             return View(cartModel);
         }
@@ -293,7 +305,6 @@ namespace Online_Ceramics_Store.Controllers
             Customer userDetails=new Customer();
             if (userId != -1)
             {
-                
                 try
                 {
                     using (var connection = new MySqlConnection(_connectionString))
@@ -308,14 +319,12 @@ namespace Online_Ceramics_Store.Controllers
                                 if (reader.Read())
                                 {
                                     // Map the reader data to the Customer model
-
                                     userDetails.full_name = reader["full_name"].ToString();
                                     userDetails.email = reader["email"].ToString();
                                     userDetails.phone = reader["phone"].ToString();
                                     userDetails.city = reader["city"].ToString();
                                     userDetails.address = reader["address"].ToString();
                                     userDetails.password = "1111";
-                                    
                                 }
                                 else
                                 {
@@ -335,7 +344,6 @@ namespace Online_Ceramics_Store.Controllers
             }
 
             DataTable productsTable = GetProductsFromCart();
-            decimal subtotal = 0;
             
             if (productsTable==null || productsTable.Rows.Count==0)
             {
@@ -344,21 +352,9 @@ namespace Online_Ceramics_Store.Controllers
                 //return View(cartModel);
 
             }
-            foreach (DataRow row in productsTable.Rows)
-            {
-                // Assuming "Total" is a column in the DataTable representing the total price for each product
-                if (Convert.ToDecimal(row["percent"]) == 0)
-                {
-                    subtotal += Convert.ToDecimal(row["quantity"]) * Convert.ToDecimal(row["price"]);
-                }
-                else
-                {
-                    subtotal += Convert.ToDecimal(row["quantity"]) * Convert.ToDecimal(row["price"])-(Convert.ToDecimal(row["quantity"]) * Convert.ToDecimal(row["price"])* Convert.ToDecimal(row["percent"])/100);
-                }
-            }
+
+            cartModel = GetCartModel();
             cartModel.userDetails = userDetails;
-            cartModel.Products = productsTable;
-            cartModel.Subtotal = subtotal;
 
             //TempData["try"] = cartModel;
 
@@ -370,26 +366,20 @@ namespace Online_Ceramics_Store.Controllers
         public IActionResult completeOrder(CartModel cartModel1)
         {
             cartModel1.userDetails.password = "1111";
+            int userId = HttpContext.Session.GetInt32("cust_id") ?? -1;
+            cartModel1.userDetails.cust_id = userId;
+
             DataTable productsTable = GetProductsFromCart();
-            decimal subtotal = 0;
             if (productsTable == null || productsTable.Rows.Count == 0)
             {
                 TempData["ErrorMessage"] = "Your shopping cart is empty. Please add items to proceed to checkout.";
             }
-            foreach (DataRow row in productsTable.Rows)
-            {
-                if (Convert.ToDecimal(row["percent"]) == 0)
-                {
-                    subtotal += Convert.ToDecimal(row["quantity"]) * Convert.ToDecimal(row["price"]);
-                }
-                else
-                {
-                    subtotal += Convert.ToDecimal(row["quantity"]) * Convert.ToDecimal(row["price"]) - (Convert.ToDecimal(row["quantity"]) * Convert.ToDecimal(row["price"]) * Convert.ToDecimal(row["percent"]) / 100);
-                }
-            }
-            cartModel.Products = productsTable;
-            cartModel.Subtotal = subtotal;
+
+
+            cartModel = GetCartModel();
             cartModel.userDetails = cartModel1.userDetails;
+
+
             TryValidateModel(cartModel1.userDetails);
             var customerModelState = new ModelStateDictionary();
             var customerContext = new ValidationContext(cartModel1.userDetails, null, null);
@@ -457,7 +447,28 @@ namespace Online_Ceramics_Store.Controllers
                             command2.ExecuteNonQuery();
                         }
                     }
+
+                    string deleteCartItemsQuery = $"DELETE FROM CART_PROD WHERE cust_id = {cartModel.userDetails.cust_id}";
+                    using (var deleteCommand = new MySqlCommand(deleteCartItemsQuery, connection))
+                    {
+                        deleteCommand.ExecuteNonQuery();
+                    }
+
+                    // Update quantity_purchased in ITEMS table for each purchased item
+                    foreach (DataRow row in cartModel.Products.Rows)
+                    {
+                        int itemId = Convert.ToInt32(row["item_id"]);
+                        int quantity = Convert.ToInt32(row["quantity"]);
+
+                        string updateQuantityPurchasedQuery = $"UPDATE ITEMS SET quantity_purchased = quantity_purchased + {quantity} WHERE item_id = {itemId}";
+                        using (var updateCommand = new MySqlCommand(updateQuantityPurchasedQuery, connection))
+                        {
+                            updateCommand.ExecuteNonQuery();
+                        }
+                    }
                 }
+
+
                 TempData["OrderId"] = orderId;
                 TempData["TotalPrice"] = cartModel.Subtotal;
                 TempData["CustomerName"] = cartModel.userDetails.full_name;
