@@ -111,6 +111,7 @@ namespace Online_Ceramics_Store.Controllers
                                 full_name = reader.GetString("full_name"),
                                 email= reader.GetString("email"),
                                 password= reader.GetString("password"),
+                                age = reader.GetString("age"),
                                 phone = reader.GetString("phone"),
                                 city = reader.GetString("city"),
                                 address= reader.GetString("address"),

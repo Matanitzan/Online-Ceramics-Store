@@ -36,9 +36,9 @@
                             <div class="d-flex flex-row align-items-center">
                                 <i class="fas fa-lock fa-lg me-3 fa-fw"></i>
                                 <div class="form-outline flex-fill mb-0">
-                                    <input name ="password" id="form3Example4c" class="form-control" />
+                                    <input name="password" id="form3Example4c" class="form-control" />
                                     <label class="form-label" for="form3Example4c">Password</label>
-                                    <div>@Html.ValidationMessageFor(x=>x.password)</div>
+                                    <div>@Html.ValidationMessageFor(x => x.password)</div>
                                 </div>
                             </div>
                         </div>
@@ -59,6 +59,16 @@
                                     <input name="phone" id="form3Example4ce" class="form-control" />
                                     <label class="form-label" for="form3Example4ce">Phone number</label>
                                     <div>@Html.ValidationMessageFor(x => x.phone)</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <div class="d-flex flex-row align-items-center">
+                                <i class="fas fa-key fa-lg me-3 fa-fw"></i>
+                                <div class="form-outline flex-fill mb-0">
+                                    <input name="age" id="form3Example4ce" class="form-control" />
+                                    <label class="form-label" for="form3Example4ce">Age</label>
+                                    <div>@Html.ValidationMessageFor(x => x.age)</div>
                                 </div>
                             </div>
                         </div>
