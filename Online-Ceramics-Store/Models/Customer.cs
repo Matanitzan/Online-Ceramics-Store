@@ -9,7 +9,7 @@ namespace Online_Ceramics_Store.Models
 		{
 
         }
-		public int cust_id { get; set; }
+        public int cust_id { get; set; } = -1;
 
         [Required]
         [StringLength(20, MinimumLength = 2, ErrorMessage = "Full name must be between 2-20 letters")]
@@ -23,11 +23,9 @@ namespace Online_Ceramics_Store.Models
         [StringLength(20, MinimumLength = 2, ErrorMessage = "password must be between 2-20 letters")]
         public string password { get; set; }
 
-
         [Required]
         [RegularExpression(@"^05\d{8}$", ErrorMessage = "Please enter a valid phone number")]
         public string phone { get; set; }
-
 
         [Required]
         [StringLength(20, MinimumLength = 2, ErrorMessage = "city must be between 2-20 letters")]
@@ -40,11 +38,6 @@ namespace Online_Ceramics_Store.Models
         [Required]
         [StringLength(20,MinimumLength =3, ErrorMessage = "Please enter a valid age")]
         public string age { get; set; }
-
-
-
-
-
 
     }
 }
