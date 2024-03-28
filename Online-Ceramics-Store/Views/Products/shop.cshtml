@@ -51,11 +51,16 @@
                 <nav class="collapse position-absolute navbar navbar-vertical navbar-light align-items-start p-0 border border-top-0 border-bottom-0 bg-light" id="navbar-vertical" style="width: calc(100% - 30px); z-index: 1;">
                     <div class="navbar-nav w-100 overflow-hidden" style="height: 410px">
                         <a href="@Url.Action("shop", "Products")"  class="nav-item nav-link category" data-category-id="1">All</a>
+
                         <a href="@Url.Action("fillterProductShop", "Products",new { category = 1 })"  class="nav-item nav-link category" data-category-id="1">Bowls</a>
                         <a href="@Url.Action("fillterProductShop", "Products",new { category = 2 })"  class="nav-item nav-link category" data-category-id="2">Clay pots</a>
                         <a href="@Url.Action("fillterProductShop", "Products",new { category = 3 })"  class="nav-item nav-link category" data-category-id="3">Jugs</a>
                         <a href="@Url.Action("fillterProductShop", "Products",new { category = 4 })"  class="nav-item nav-link category" data-category-id="4">Cups</a>
+                        <a href="@Url.Action("fillterBypopular", "Products",new { category = 5 })" class="nav-item nav-link category" data-category-id="5">Popular products</a>
+                        <a href="@Url.Action("fillterbydecreaseprice", "Products",new { category = 6 })" class="nav-item nav-link category" data-category-id="6">decrease price</a>
+                        <a href="@Url.Action("Filterbyincreaseprice", "Products",new { category = 7 })" class="nav-item nav-link category" data-category-id="7">increase price</a>
 
+                        
                     </div>
                 </nav>
             </div>
@@ -115,7 +120,17 @@
                                 <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
                                     <h6 class="text-truncate mb-3">@product.name</h6>
                                     <div class="d-flex justify-content-center">
-                                        <h6>@product.price ILS</h6>
+                                        @{
+                                            decimal discountedPrice = @product.price - (@product.price * @product.percent / 100);
+                                            if (product.insale == 0)
+                                            {
+                                                <h6>@product.price ILS</h6>
+                                            }
+                                            else
+                                            {
+                                                <h6>@discountedPrice.ToString("F") ILS <del>@product.price ILS</del></h6>
+                                            }
+                                        }
                                     </div>
                                 </div>
                                 <div class="card-footer d-flex justify-content-between bg-light border">

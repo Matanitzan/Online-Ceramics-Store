@@ -11,6 +11,8 @@ namespace Online_Ceramics_Store.Models
 		public string name { get; set; }
         public string description { get; set; }
         public string information { get; set; }
+		public int quantity_purchased { get; set; }
+        public float UpdatedPrice { get; set; }
 
         public int stock_quantity { get; set; }
         public int category_id { get; set; }
