@@ -25,6 +25,10 @@ namespace Online_Ceramics_Store.Controllers
         public IActionResult contact()
         {
             ContactViewModel contact = new ContactViewModel();
+            int? cust_id = HttpContext.Session.GetInt32("cust_id");
+            string? full_name = HttpContext.Session.GetString("full_name");
+            ViewBag.CustId = cust_id;
+            ViewBag.FullName = full_name;
             return View("contact", contact);
         }
 
@@ -38,6 +42,10 @@ namespace Online_Ceramics_Store.Controllers
         }
         public IActionResult faqs()
         {
+            int? cust_id = HttpContext.Session.GetInt32("cust_id");
+            string? full_name = HttpContext.Session.GetString("full_name");
+            ViewBag.CustId = cust_id;
+            ViewBag.FullName = full_name;
             return View();
         }
     }

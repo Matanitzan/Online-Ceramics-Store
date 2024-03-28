@@ -99,6 +99,7 @@ namespace Online_Ceramics_Store.Controllers
                                 insale = reader.GetInt32("insale"),
                                 percent = reader.GetInt32("percent"),
                                 price = reader.GetInt32("price"),
+                                
                             };
                             searchResults.Add(product);
                         }
@@ -111,47 +112,198 @@ namespace Online_Ceramics_Store.Controllers
             ViewBag.FullName = full_name;
             return View("shop", searchResults);
         }
+
         public IActionResult fillterByPrice(int filterPriceMin, int filterPriceMax)
         {
             List<Product> allfillterProducts = new List<Product>();
             using (MySqlConnection connection = new MySqlConnection(_connectionString))
             {
                 connection.Open();
-                string query = "SELECT * FROM ITEMS WHERE price>= @filterPriceMin and price<=@filterPriceMax";
+                string query = "SELECT * FROM ITEMS";
+
                 using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@filterPriceMin", filterPriceMin);
                     command.Parameters.AddWithValue("@filterPriceMax", filterPriceMax);
                     using (MySqlDataReader reader = command.ExecuteReader())
                     {
-                        if (reader.Read())
+                        while (reader.Read())
                         {
-                            do
+                            Product product = new Product()
                             {
-                                Product product = new Product()
-                                {
-                                    item_id = reader.GetInt32("item_id"),
-                                    name = reader.GetString("name"),
-                                    description = reader.GetString("description"),
-                                    information = reader.GetString("information"),
-                                    stock_quantity = reader.GetInt32("stock_quantity"),
-                                    category_id = reader.GetInt32("category_id"),
-                                    insale = reader.GetInt32("insale"),
-                                    percent = reader.GetInt32("percent"),
-                                    price = reader.GetInt32("price"),
-                                };
+                                item_id = reader.GetInt32("item_id"),
+                                name = reader.GetString("name"),
+                                description = reader.GetString("description"),
+                                information = reader.GetString("information"),
+                                stock_quantity = reader.GetInt32("stock_quantity"),
+                                category_id = reader.GetInt32("category_id"),
+                                insale = reader.GetInt32("insale"),
+                                percent = reader.GetInt32("percent"),
+                                price = reader.GetInt32("price"),
+                            };
+                            
+                            if ((product.insale == 0 && product.price >= filterPriceMin && product.price <= filterPriceMax) ||  (product.insale == 1 && CalculateNewPrice(product) >= filterPriceMin && CalculateNewPrice(product) <= filterPriceMax)||filterPriceMin==0 && filterPriceMax==0)
+                            {
                                 allfillterProducts.Add(product);
-                            } while (reader.Read());
+                            }
                         }
                     }
                 }
-                int? cust_id = HttpContext.Session.GetInt32("cust_id");
-                string? full_name = HttpContext.Session.GetString("full_name");
-                ViewBag.CustId = cust_id;
-                ViewBag.FullName = full_name;
-                return View("shop", allfillterProducts);
             }
+
+            // Pass the filtered products to the view
+            return View("shop", allfillterProducts);
         }
+        // Method to calculate new price
+        private float CalculateNewPrice(Product product)
+        {
+            return product.price - (product.price * product.percent / 100);
+        }
+        public IActionResult fillterBypopular()
+        {
+            List<Product> allfillterProducts = new List<Product>();
+            using (MySqlConnection connection = new MySqlConnection(_connectionString))
+            {
+                connection.Open();
+                string query = "SELECT * FROM ITEMS";
+
+                using (MySqlCommand command = new MySqlCommand(query, connection))
+                {
+                   
+                    using (MySqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            Product product = new Product()
+                            {
+                                item_id = reader.GetInt32("item_id"),
+                                name = reader.GetString("name"),
+                                description = reader.GetString("description"),
+                                information = reader.GetString("information"),
+                                stock_quantity = reader.GetInt32("stock_quantity"),
+                                quantity_purchased= reader.GetInt32("quantity_purchased"),
+                                category_id = reader.GetInt32("category_id"),
+                                insale = reader.GetInt32("insale"),
+                                percent = reader.GetInt32("percent"),
+                                price = reader.GetInt32("price"),
+                            };
+
+                            allfillterProducts = allfillterProducts.OrderByDescending(p => p.quantity_purchased).ToList();
+                            allfillterProducts.Add(product);
+                            
+                        }
+                    }
+                }
+            }
+
+            // Pass the filtered products to the view
+            return View("shop", allfillterProducts);
+        }
+
+
+        public IActionResult fillterbydecreaseprice()
+        {
+            List<Product> allfillterProducts = new List<Product>();
+            using (MySqlConnection connection = new MySqlConnection(_connectionString))
+            {
+                connection.Open();
+                string query = "SELECT * FROM ITEMS";
+
+                using (MySqlCommand command = new MySqlCommand(query, connection))
+                {
+                    using (MySqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            Product product = new Product()
+                            {
+                               item_id = reader.GetInt32("item_id"),
+                                name = reader.GetString("name"),
+                                description = reader.GetString("description"),
+                                information = reader.GetString("information"),
+                                stock_quantity = reader.GetInt32("stock_quantity"),
+                                quantity_purchased= reader.GetInt32("quantity_purchased"),
+                                category_id = reader.GetInt32("category_id"),
+                                insale = reader.GetInt32("insale"),
+                                percent = reader.GetInt32("percent"),
+                                price = reader.GetInt32("price"),
+                            };
+
+                            // Update price if the product is on sale
+                            if (product.insale == 1)
+                            {
+                                product.UpdatedPrice = product.price - (product.price * product.percent / 100);
+                            }
+                            else
+                            {
+                                product.UpdatedPrice = product.price; // Use original price
+                            }
+
+                            // Add the product to the list without sorting
+                            allfillterProducts.Add(product);
+                        }
+                    }
+                }
+            }
+
+            // Sort the list by updated price in descending order
+            List<Product> sortedProducts = allfillterProducts.OrderByDescending(p => p.UpdatedPrice).ToList();
+
+            // Pass the sorted products to the view
+            return View("shop", sortedProducts);
+        }
+        public IActionResult Filterbyincreaseprice()
+        {
+            List<Product> allfillterProducts = new List<Product>();
+            using (MySqlConnection connection = new MySqlConnection(_connectionString))
+            {
+                connection.Open();
+                string query = "SELECT * FROM ITEMS";
+
+                using (MySqlCommand command = new MySqlCommand(query, connection))
+                {
+                    using (MySqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            Product product = new Product()
+                            {
+                                item_id = reader.GetInt32("item_id"),
+                                name = reader.GetString("name"),
+                                description = reader.GetString("description"),
+                                information = reader.GetString("information"),
+                                stock_quantity = reader.GetInt32("stock_quantity"),
+                                quantity_purchased = reader.GetInt32("quantity_purchased"),
+                                category_id = reader.GetInt32("category_id"),
+                                insale = reader.GetInt32("insale"),
+                                percent = reader.GetInt32("percent"),
+                                price = reader.GetInt32("price"),
+                            };
+
+                            // Update price if the product is on sale
+                            if (product.insale == 1)
+                            {
+                                product.UpdatedPrice = product.price - (product.price * product.percent / 100);
+                            }
+                            else
+                            {
+                                product.UpdatedPrice = product.price; // Use original price
+                            }
+
+                            // Add the product to the list without sorting
+                            allfillterProducts.Add(product);
+                        }
+                    }
+                }
+            }
+
+            // Sort the list by price in ascending order after updating the prices
+            List<Product> sortedProducts = allfillterProducts.OrderBy(p => p.UpdatedPrice).ToList();
+
+            // Pass the sorted products to the view
+            return View("shop", sortedProducts);
+        }
+
         public IActionResult fillterProductShop(int category)
         {
             
