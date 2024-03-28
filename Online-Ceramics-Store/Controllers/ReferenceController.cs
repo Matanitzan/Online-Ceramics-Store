@@ -32,32 +32,9 @@ namespace Online_Ceramics_Store.Controllers
         [HttpPost]
         public IActionResult SendMessage(ContactViewModel contact)
         {
-
-            //if (ModelState.IsValid)
-            //{
-            //    return View("HomePage");
-            //}
-            //else
-            //{
-            //    return View("contact", contact);
-            //}
             return View("contact", contact);
 
             // If validation fails, return to the same view with validation errors
-        }
-
-        // Your utility method for email validation
-        private bool IsValidEmail(string email)
-        {
-            try
-            {
-                var mailAddress = new System.Net.Mail.MailAddress(email);
-                return mailAddress.Address == email;
-            }
-            catch
-            {
-                return false;
-            }
         }
         public IActionResult faqs()
         {

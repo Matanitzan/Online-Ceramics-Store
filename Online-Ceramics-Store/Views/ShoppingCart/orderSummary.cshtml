@@ -1,6 +1,5 @@
-@model Online_Ceramics_Store.Models.CartModel
+﻿@model Online_Ceramics_Store.Models.CartModel
 @using System.Data
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -120,103 +119,48 @@
     <!-- Page Header Start -->
     <div class="container-fluid mb-5" style="background-color: #EDF1FF;">
         <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 300px; background-color: #EDF1FF; ">
-            <h1 class="font-weight-semi-bold text-uppercase mb-3">Shopping Cart</h1>
-            <div class="d-inline-flex">
-            </div>
+            <h1 class="font-weight-semi-bold text-uppercase mb-3">Order Summary</h1>
+            <h4 class="font-weight-semi-bold m-0">The order has been successfully completed and will be distributed in the coming days.</h4>
+            <h4 calss="font-weight-semi-bold m-0">Thank you</h4>
+
         </div>
     </div>
     <!-- Page Header End -->
-    <!-- Cart Start -->
+    <!-- Order Summary Start -->
     <div class="container-fluid pt-5">
         <div class="row px-xl-5">
-            <div class="col-lg-8 table-responsive mb-5">
-                <table class="table table-bordered text-center mb-0">
-                    <thead class="text-dark" style="background-color: #EDF1FF;">
-                        <tr>
-                            <th>Products</th>
-                            <th>Price</th>
-                            <th>Quantity</th>
-                            <th>Total</th>
-                            <th>Remove</th>
-                        </tr>
-                    </thead>
-                    <tbody class="align-middle">
-                        @foreach (DataRow row in Model.Products.Rows)
-                        {
-                            <tr>
-                                <td class="align-middle">@row["name"]</td>
-                                <td class="align-middle">@($"${((Convert.ToDecimal(row["price"])) - (Convert.ToInt32(row["price"]) * Convert.ToDecimal(row["percent"])) / 100):N2}")</td>
-
-                                <td class="align-middle">
-                                    <!-- Quantity input -->
-                                    <div class="input-group quantity mx-auto" style="width: 100px;">
-                                        <div class="input-group-btn">
-                                            <button class="btn btn-sm btn-primary btn-minus btn-block" style="background-color: #D19C97; border: hidden;" onclick="updateQuantity('@row["item_id"]', 'minus')">
-                                                <i class="fa fa-minus"></i>
-                                            </button>
-                                        </div>
-                                        <input id="quantity-@row["item_id"]" type="text" class="form-control form-control-sm text-center" style="background-color: #EDF1FF;" value="@row["quantity"]">
-                                        <div class="input-group-btn">
-                                            <button class="btn btn-sm btn-primary btn-
-                                                    plus btn-block" style="background-color: #D19C97; border: hidden; " onclick="updateQuantity('@row["item_id"]', 'plus')">
-                                                <i class="fa fa-plus"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </td>
-                                <!-- Calculate total -->
-                                @if (Convert.ToDecimal(row["percent"]) == 0)
-                                {
-                                    <td class="align-middle">@($"${Convert.ToDecimal(row["price"]) * Convert.ToInt32(row["quantity"]):N2}")</td>
-                                }
-                                else
-                                {
-                                    <td class="align-middle">@($"${((Convert.ToDecimal(row["price"]) * Convert.ToInt32(row["quantity"]))-(Convert.ToDecimal(row["price"]) * Convert.ToInt32(row["quantity"])) * Convert.ToDecimal(row["percent"]) / 100):N2}")</td>
-                                }
-                                <td class="align-middle">
-                                    <button class="btn btn-sm btn-primary remove-btn" style="background-color: #D19C97; border: hidden;" onclick="updateQuantity('@row["item_id"]', 'remove')">
-                                        <i class="fa fa-times"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-
-                @if (!string.IsNullOrEmpty(TempData["ErrorMessage"] as string))
-                {
-                    <div class="alert alert-danger" role="alert">
-                        @TempData["ErrorMessage"]
-                    </div>
-                }
+            <div class="col-lg-8">
+                <!-- Display order details here -->
+                <div class="mb-4">
+                    <h4 class="font-weight-semi-bold mb-4">Order Details</h4>
+                    <!-- Display order details using Razor syntax -->
+                    <p>Order Number: @TempData["OrderId"]</p>
+                    <p>Customer Name: @TempData["CustomerName"]</p>
+                    <p>Order Date: @TempData["orderDate"]</p>
+                    <p>Ship Date: @TempData["shipDate"]</p>
+                </div>
             </div>
             <div class="col-lg-4">
+                <!-- Display total price paid and order number -->
                 <div class="card border-secondary mb-5">
                     <div class="card-header border-0" style="background-color: #EDF1FF;">
-                        <h4 class="font-weight-semi-bold m-0">Cart Summary</h4>
+                        <h4 class="font-weight-semi-bold m-0">Order Summary</h4>
+
                     </div>
                     <div class="card-body">
-                        <div class="d-flex justify-content-between mb-3 pt-1">
-                            <h6 class="font-weight-medium">Subtotal</h6>
-                            <h6 class="font-weight-medium">$@Model.Subtotal</h6>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <h6 class="font-weight-medium">Shipping</h6>
-                            <h6 class="font-weight-medium">$10</h6>
-                        </div>
+                        <!-- Display total price paid -->
+                        <h5 class="font-weight-medium mb-3">Total Price Paid</h5>
+                        <p>Total: $@TempData["TotalPrice"]</p>
                     </div>
                     <div class="card-footer border-secondary bg-transparent">
-                        <div class="d-flex justify-content-between mt-2">
-                            <h5 class="font-weight-bold">Total</h5>
-                            <h5 class="font-weight-bold">$@(Convert.ToDecimal(Model.Subtotal) + 10)</h5>
-                        </div>
-                        <a class="text-dark mb-2" href="@Url.Action("checkout", "ShoppingCart")"><btn class="btn btn-block btn-primary my-3 py-3" style="background-color: #D19C97; border: hidden;">Proceed To Checkout</a>
+                        <!-- Display order number -->
+                        <p class="font-weight-bold">Order Number: @TempData["OrderId"]</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <!-- Cart End -->
+    <!-- Order Summary End -->
     <!-- Footer Start -->
     <div class="container-fluid text-dark mt-5 pt-5" style="background-color: #EDF1FF;">
         <div class="row px-xl-5 pt-5">
@@ -259,67 +203,19 @@
     <!-- Back to Top -->
     <a href="#" class="btn btn-primary back-to-top" style="background-color: #D19C97; border: hidden;"><i class="fa fa-angle-double-up"></i></a>
 
-
     <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
     <script src="lib/easing/easing.min.js"></script>
-
     <script src="lib/owlcarousel/owl.carousel.min.js"></script>
-    <script>
-        function updateQuantity(itemId, operation) {
-            $.ajax({
-                url: '@Url.Action("GetStockQuantity", "ShoppingCart")', // Create a new action to retrieve stock quantity
-                type: 'GET',
-                data: { itemId: itemId },
-                success: function(stockQuantity) {
-                    console.log('Stock quantity received: ' + stockQuantity);
-                    // Check if the operation is 'plus' and requested quantity exceeds available stock
-                    if (operation === 'plus' && stockQuantity <= parseInt($('#quantity-' + itemId).val())) {
-                        alert('Requested quantity exceeds available stock.');
-                        return; // Prevent further execution
-                    }
-
-                    // Proceed with the update if no validation issues
-                    $.ajax({
-                        url: '@Url.Action("UpdateCart", "ShoppingCart")',
-                        type: 'POST',
-                        data: { itemId: itemId, operation: operation },
-                        success: function(response) {
-                            console.log('Request was successful');
-                            // Update quantity in HTML
-                            var quantityElement = $('#quantity-' + itemId);
-                            if (quantityElement.length > 0) {
-                                var updatedQuantity = response.updatedQuantity;
-                                quantityElement.val(updatedQuantity);
-                                if (updatedQuantity === 0) {
-                                    // Remove the row from the table if the quantity becomes 0
-                                    quantityElement.closest('tr').remove();
-                                }
-                            }
-                        },
-                        error: function(xhr, status, error) {
-                            console.error('Request failed with status code: ' + status);
-                        }
-                    });
-                },
-                error: function(xhr, status, error) {
-                    console.error('Failed to retrieve stock quantity with status code: ' + status);
-                }
-            });
-        }
-    </script>
-
-    <script>function removeItem(button) {
-            var row = button.closest('tr'); // Get the closest parent <tr> element
-            row.remove(); // Remove the row from the table
-        }</script>
 
     <!-- Contact Javascript File -->
     <script src="mail/jqBootstrapValidation.min.js"></script>
     <script src="mail/contact.js"></script>
+
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
+ 
 </body>
 
 </html>

@@ -10,6 +10,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Extensions;
 using System.Text.Json;
 using static System.Net.Mime.MediaTypeNames;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using static System.Formats.Asn1.AsnWriter;
+using System.ComponentModel.DataAnnotations;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -19,6 +22,7 @@ namespace Online_Ceramics_Store.Controllers
     {
         private IConfiguration _configuraion;
         private readonly string _connectionString = "";
+        public CartModel cartModel = new CartModel();
 
         public ShoppingCartController(IConfiguration configuration)
         {
@@ -95,7 +99,7 @@ namespace Online_Ceramics_Store.Controllers
             {
                 // SQL command to select name, price, and calculate quantity from products table and the dictionary
 
-                string sqlQuery = "SELECT p.name, p.price, p.item_id, IFNULL(pd.quantity, 0) AS quantity " +
+                string sqlQuery = "SELECT p.name, p.price, p.item_id, p.percent, IFNULL(pd.quantity, 0) AS quantity " +
                                   "FROM ITEMS p " +
                                   "LEFT JOIN (SELECT * FROM (";
 
@@ -112,7 +116,7 @@ namespace Online_Ceramics_Store.Controllers
 
                     // Completing the SQL query
                     sqlQuery += ") AS temp) AS pd ON p.item_id = pd.item_id having quantity!=0";
-
+                    Console.WriteLine(sqlQuery);
                     // Creating a SqlDataAdapter to execute the SQL query
                     using (MySqlDataAdapter adapter = new MySqlDataAdapter(sqlQuery, connection))
                     {
@@ -133,18 +137,24 @@ namespace Online_Ceramics_Store.Controllers
             // Retrieve the DataTable with product data
             DataTable productsTable = GetProductsFromCart();
             decimal subtotal = 0;
+            if (productsTable == null || productsTable.Rows.Count == 0)
+            {
+                TempData["ErrorMessage"] = "Your shopping cart is empty. Please add items to proceed to checkout.";
+            }
             foreach (DataRow row in productsTable.Rows)
             {
-                // Assuming "Total" is a column in the DataTable representing the total price for each product
-                subtotal += Convert.ToDecimal(row["quantity"]) * Convert.ToDecimal(row["price"]);
+                if (Convert.ToDecimal(row["percent"]) == 0)
+                {
+                    subtotal += Convert.ToDecimal(row["quantity"]) * Convert.ToDecimal(row["price"]);
+                }
+                else
+                {
+                    subtotal += Convert.ToDecimal(row["quantity"]) * Convert.ToDecimal(row["price"]) - (Convert.ToDecimal(row["quantity"]) * Convert.ToDecimal(row["price"]) * Convert.ToDecimal(row["percent"]) / 100);
+                }
             }
-            // Create an instance of the ViewModel and populate it with the DataTable
-            CartModel cartModel = new CartModel
-            {
-                Products = productsTable,
-                Subtotal = subtotal
-
-            };
+            cartModel.Products = productsTable;
+            cartModel.Subtotal = subtotal;
+            //TempData["CartModel"] = cartModel;
             return View(cartModel);
         }
 
@@ -221,7 +231,7 @@ namespace Online_Ceramics_Store.Controllers
 
                         // Execute the SQL command
                         int rowsAffected = command.ExecuteNonQuery();
-
+                        
                         if (rowsAffected > 0)
                         {                            
                             // Update successful
@@ -278,7 +288,197 @@ namespace Online_Ceramics_Store.Controllers
 
         public IActionResult checkout()
         {
-            return View();
+            int userId = HttpContext.Session.GetInt32("cust_id") ?? -1;
+            // Fetch user details from the database based on the user ID
+            Customer userDetails=new Customer();
+            if (userId != -1)
+            {
+                
+                try
+                {
+                    using (var connection = new MySqlConnection(_connectionString))
+                    {
+                        connection.Open();
+                        string query = "SELECT * FROM USERS WHERE cust_id = @cust_id";
+                        using (var command = new MySqlCommand(query, connection))
+                        {
+                            command.Parameters.AddWithValue("@cust_id", userId);
+                            using (var reader = command.ExecuteReader())
+                            {
+                                if (reader.Read())
+                                {
+                                    // Map the reader data to the Customer model
+
+                                    userDetails.full_name = reader["full_name"].ToString();
+                                    userDetails.email = reader["email"].ToString();
+                                    userDetails.phone = reader["phone"].ToString();
+                                    userDetails.city = reader["city"].ToString();
+                                    userDetails.address = reader["address"].ToString();
+                                    userDetails.password = "1111";
+                                    
+                                }
+                                else
+                                {
+                                    // User not found in the database
+                                    TempData["ErrorMessage"] = "User details not found.";
+                                    return RedirectToAction("cart");
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    TempData["ErrorMessage"] = "An error occurred while fetching user details: " + ex.Message;
+                    return RedirectToAction("cart");
+                }
+            }
+
+            DataTable productsTable = GetProductsFromCart();
+            decimal subtotal = 0;
+            
+            if (productsTable==null || productsTable.Rows.Count==0)
+            {
+                TempData["ErrorMessage"] = "Your shopping cart is empty. Please add items to proceed to checkout.";
+                return RedirectToAction("cart");
+                //return View(cartModel);
+
+            }
+            foreach (DataRow row in productsTable.Rows)
+            {
+                // Assuming "Total" is a column in the DataTable representing the total price for each product
+                if (Convert.ToDecimal(row["percent"]) == 0)
+                {
+                    subtotal += Convert.ToDecimal(row["quantity"]) * Convert.ToDecimal(row["price"]);
+                }
+                else
+                {
+                    subtotal += Convert.ToDecimal(row["quantity"]) * Convert.ToDecimal(row["price"])-(Convert.ToDecimal(row["quantity"]) * Convert.ToDecimal(row["price"])* Convert.ToDecimal(row["percent"])/100);
+                }
+            }
+            cartModel.userDetails = userDetails;
+            cartModel.Products = productsTable;
+            cartModel.Subtotal = subtotal;
+
+            //TempData["try"] = cartModel;
+
+            return View(cartModel);
+        }
+
+
+        [HttpPost]
+        public IActionResult completeOrder(CartModel cartModel1)
+        {
+            cartModel1.userDetails.password = "1111";
+            DataTable productsTable = GetProductsFromCart();
+            decimal subtotal = 0;
+            if (productsTable == null || productsTable.Rows.Count == 0)
+            {
+                TempData["ErrorMessage"] = "Your shopping cart is empty. Please add items to proceed to checkout.";
+            }
+            foreach (DataRow row in productsTable.Rows)
+            {
+                if (Convert.ToDecimal(row["percent"]) == 0)
+                {
+                    subtotal += Convert.ToDecimal(row["quantity"]) * Convert.ToDecimal(row["price"]);
+                }
+                else
+                {
+                    subtotal += Convert.ToDecimal(row["quantity"]) * Convert.ToDecimal(row["price"]) - (Convert.ToDecimal(row["quantity"]) * Convert.ToDecimal(row["price"]) * Convert.ToDecimal(row["percent"]) / 100);
+                }
+            }
+            cartModel.Products = productsTable;
+            cartModel.Subtotal = subtotal;
+            cartModel.userDetails = cartModel1.userDetails;
+            TryValidateModel(cartModel1.userDetails);
+            var customerModelState = new ModelStateDictionary();
+            var customerContext = new ValidationContext(cartModel1.userDetails, null, null);
+            var customerValidationResults = new List<ValidationResult>();
+
+            bool customerIsValid = Validator.TryValidateObject(cartModel1.userDetails, customerContext, customerValidationResults, true);
+
+            if (!customerIsValid) //true
+            {
+
+                //CartModel cartModel = TempData["try"] as CartModel;
+
+                //cartModel.userDetails = cartModel1.userDetails;
+                //TempData["try"] = cartModel;
+
+                // Model validation failed, return the checkout view with validation errors
+                return View("checkout", cartModel);
+            }
+            else
+            {
+                int orderId;
+                string orderDate = DateTime.Now.ToString("yyyy-MM-dd");
+                string shipDate = DateTime.Now.AddDays(14).ToString("yyyy-MM-dd");
+                //string insertOrderQuery = "INSERT INTO ORDERS (cust_id, order_date, ship_date, total_amount, status) VALUES (@cust_id, @order_date, @ship_date, @total_amount, @status)";
+                string insertOrderQuery = $@"INSERT INTO ORDERS (cust_id, order_date, ship_date, total_amount, status) 
+                                     VALUES ({cartModel.userDetails.cust_id}, '{orderDate}', '{shipDate}', {cartModel.Subtotal}, 'received')";
+
+                using (var connection = new MySqlConnection(_connectionString))
+                {
+                    MySqlCommand command = new MySqlCommand(insertOrderQuery, connection);
+                    connection.Open();
+                    command.ExecuteNonQuery();
+
+
+                    // Construct the SQL query to retrieve shopping cart data for the specified customer ID
+                    string sqlQuery = "SELECT MAX(order_id) FROM ORDERS";
+
+                    // Create a command object with the SQL query and connection
+                    using (MySqlCommand command1 = new MySqlCommand(sqlQuery, connection))
+                    {
+                        using (var reader = command1.ExecuteReader())
+                        {
+                            reader.Read();
+                            orderId = reader.GetInt32(0);
+                        }
+                    }
+
+                    foreach (DataRow row in cartModel.Products.Rows)
+                    {
+                        int itemId = Convert.ToInt32(row["item_id"]);
+                        int quantity = Convert.ToInt32(row["quantity"]);
+                        decimal price;
+                        if (Convert.ToDecimal(row["percent"]) == 0)
+                        {
+                            price= Convert.ToDecimal(row["quantity"]) * Convert.ToDecimal(row["price"]);
+                        }
+                        else
+                        {
+                            price= Convert.ToDecimal(row["quantity"]) * Convert.ToDecimal(row["price"]) - (Convert.ToDecimal(row["quantity"]) * Convert.ToDecimal(row["price"]) * Convert.ToDecimal(row["percent"]) / 100);
+                        }
+                        string insertOrderItemQuery = $@"INSERT INTO ORDER_ITEMS (order_id, item_id, quantity, price) 
+                                                       VALUES ({orderId}, {itemId}, {quantity}, {price})";
+                        using (MySqlCommand command2 = new MySqlCommand(insertOrderItemQuery, connection))
+                        {
+                            command2.ExecuteNonQuery();
+                        }
+                    }
+                }
+                TempData["OrderId"] = orderId;
+                TempData["TotalPrice"] = cartModel.Subtotal;
+                TempData["CustomerName"] = cartModel.userDetails.full_name;
+                TempData["orderDate"] = orderDate;
+                TempData["shipDate"] = shipDate;
+                orderSummary();
+
+                return View("orderSummary"); 
+            }
+        }
+
+        [HttpPost]
+        public IActionResult orderSummary()
+        {
+            HttpContext.Session.Remove("ShoppingCart");
+
+            if (HttpContext.Session.GetString("ShoppingCart") != null)
+            {
+                Console.WriteLine("problem with the remove session");
+            }
+            return View("orderSummary");
         }
     }
 }
