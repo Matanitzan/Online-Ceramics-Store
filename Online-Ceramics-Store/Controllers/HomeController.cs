@@ -35,7 +35,10 @@ namespace Online_Ceramics_Store.Controllers
 
         public IActionResult HomePage()
         {
-
+            int? cust_id = HttpContext.Session.GetInt32("cust_id");
+            string? full_name = HttpContext.Session.GetString("full_name");
+            ViewBag.CustId = cust_id;
+            ViewBag.FullName = full_name;
             return View();
         }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
