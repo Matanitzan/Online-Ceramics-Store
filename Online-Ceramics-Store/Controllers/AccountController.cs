@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MySqlConnector;
 using Online_Ceramics_Store.Models;
-
+//var temp = Guid.NewGuid().ToString();
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -43,13 +43,84 @@ namespace Online_Ceramics_Store.Controllers
             HttpContext.Session.Clear();
             return RedirectToAction("Index","Home");
         }
+        [HttpPost]
+        public IActionResult UpdateProfileGeneral(Customer updatedCustomer)
+        {
+            if (updatedCustomer != null && updatedCustomer.cust_id > 0)
+            {
+                using (MySqlConnection connection = new MySqlConnection(_connectionString))
+                {
+                    connection.Open();
+                    string query = "UPDATE USERS SET full_name = @full_name, email = @email, "
+                                 + "password = @password, phone = @phone, city = @city, "
+                                 + "address = @address WHERE cust_id = @cust_id";
+
+                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@full_name", updatedCustomer.full_name);
+                        command.Parameters.AddWithValue("@email", updatedCustomer.email);
+                        command.Parameters.AddWithValue("@password", updatedCustomer.password);
+                        command.Parameters.AddWithValue("@phone", updatedCustomer.phone);
+                        command.Parameters.AddWithValue("@city", updatedCustomer.city);
+                        command.Parameters.AddWithValue("@address", updatedCustomer.address);
+                        command.Parameters.AddWithValue("@cust_id", updatedCustomer.cust_id);
+
+                        int rowsAffected = command.ExecuteNonQuery();
+
+                        if (rowsAffected > 0)
+                        {
+                            ViewBag.Message = "Profile updated successfully";
+                            return View("Profile"); 
+                        }
+                        else
+                        {
+                            ViewBag.Message = "Failed to update profile";
+                            return View("Profile"); 
+                        }
+                    }
+                }
+            }
+            else
+            {
+                ViewBag.Message = "Invalid customer data";
+                return View("Profile"); 
+            }
+        }
+
         public IActionResult Profile()
         {
             int? cust_id = HttpContext.Session.GetInt32("cust_id");
             string? full_name = HttpContext.Session.GetString("full_name");
             ViewBag.CustId = cust_id;
             ViewBag.FullName = full_name;
-            return View();
+            Customer customer= null;
+            using (MySqlConnection connection = new MySqlConnection(_connectionString))
+            {
+                connection.Open();
+                string query = "SELECT * FROM USERS WHERE cust_id = @cust_id ";
+                using (MySqlCommand command = new MySqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@cust_id", cust_id);
+                    using (MySqlDataReader reader = command.ExecuteReader())
+                    {
+                        if(reader.Read())
+                        {
+                            customer = new Customer()
+                            {
+                                cust_id = reader.GetInt32("cust_id"),
+                                full_name = reader.GetString("full_name"),
+                                email= reader.GetString("email"),
+                                password= reader.GetString("password"),
+                                age = reader.GetString("age"),
+                                phone = reader.GetString("phone"),
+                                city = reader.GetString("city"),
+                                address= reader.GetString("address"),
+                            };
+                        }
+                    }
+                }
+            }
+            return View(customer);
         }
         [Route("Login")]
         public IActionResult Login() {
@@ -84,6 +155,7 @@ namespace Online_Ceramics_Store.Controllers
                             HttpContext.Session.SetInt32("cust_id", custId);
                             string fullName = reader.GetString("full_name");
                             HttpContext.Session.SetString("full_name", fullName);
+                            
                             return RedirectToAction("shop", "Products");
                         }
                         else
