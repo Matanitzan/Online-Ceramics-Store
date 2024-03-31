@@ -371,7 +371,6 @@ namespace Online_Ceramics_Store.Controllers
         public IActionResult completeOrder(CartModel cartModel1)
         {
             cartModel1.userDetails.password = "1111";
-            cartModel1.userDetails.age = "111";
             int userId = HttpContext.Session.GetInt32("cust_id") ?? -1;
             cartModel1.userDetails.cust_id = userId;
 

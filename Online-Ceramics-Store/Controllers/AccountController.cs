@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -111,7 +112,6 @@ namespace Online_Ceramics_Store.Controllers
                                 full_name = reader.GetString("full_name"),
                                 email= reader.GetString("email"),
                                 password= reader.GetString("password"),
-                                age = reader.GetString("age"),
                                 phone = reader.GetString("phone"),
                                 city = reader.GetString("city"),
                                 address= reader.GetString("address"),
@@ -155,7 +155,7 @@ namespace Online_Ceramics_Store.Controllers
                             HttpContext.Session.SetInt32("cust_id", custId);
                             string fullName = reader.GetString("full_name");
                             HttpContext.Session.SetString("full_name", fullName);
-                            
+                            setSession(custId);
                             return RedirectToAction("shop", "Products");
                         }
                         else
@@ -235,6 +235,49 @@ namespace Online_Ceramics_Store.Controllers
             }
         }
 
+        private void setSession(int userID)
+        {
+            var productsDetailCart = new Dictionary<int, int>();
+
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                // Construct the SQL query to retrieve shopping cart data for the specified customer ID
+                string sqlQuery = $"SELECT item_id, quantity FROM CART_PROD WHERE cust_id = {userID}";
+
+                // Create a command object with the SQL query and connection
+                using (var command = new MySqlCommand(sqlQuery, connection))
+                {
+
+                    // Open the database connection
+                    connection.Open();
+
+                    // Execute the SQL query and retrieve the result using a reader
+                    using (var reader = command.ExecuteReader())
+                    {
+                        // Iterate through the result set and populate the productsDetailCart dictionary
+                        while (reader.Read())
+                        {
+                            int itemId = reader.GetInt32("item_id");
+                            int quantity = reader.GetInt32("quantity");
+
+                            // Add item_id and quantity to the dictionary
+                            productsDetailCart.Add(itemId, quantity);
+                        }
+                    }
+                }
+            }
+
+            var test = new ProductsCartModel
+            {
+                userID = 0,
+                productsDetailCart = productsDetailCart
+            };
+
+            var json1 = JsonSerializer.Serialize(test);
+
+            // Store the JSON string in the session
+            HttpContext.Session.SetString("ShoppingCart", json1);
+        }
 
     }
 }

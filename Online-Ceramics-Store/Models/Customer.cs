@@ -35,10 +35,6 @@ namespace Online_Ceramics_Store.Models
         [StringLength(20, MinimumLength = 4, ErrorMessage = "address must be between 4-40 letters")]
         public string address { get; set; }
 
-        [Required]
-        [StringLength(20,MinimumLength =3, ErrorMessage = "Please enter a valid age")]
-        public string age { get; set; }
-
     }
 }
 
