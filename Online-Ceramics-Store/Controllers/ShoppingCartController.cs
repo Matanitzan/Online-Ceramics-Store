@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using static System.Formats.Asn1.AsnWriter;
 using System.ComponentModel.DataAnnotations;
 
-// For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+// For more information on enabling MVC for emsspty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace Online_Ceramics_Store.Controllers
 {
@@ -39,65 +39,23 @@ namespace Online_Ceramics_Store.Controllers
         [HttpPost]
         public DataTable GetProductsFromCart()
         {
-            var productsDetailCart = new Dictionary<int, int>();
-
-            using (var connection = new MySqlConnection(_connectionString))
-            {
-                // Construct the SQL query to retrieve shopping cart data for the specified customer ID
-                string sqlQuery = "SELECT item_id, quantity FROM CART_PROD WHERE cust_id = 0";
-
-                // Create a command object with the SQL query and connection
-                using (var command = new MySqlCommand(sqlQuery, connection))
-                {
-
-                    // Open the database connection
-                    connection.Open();
-
-                    // Execute the SQL query and retrieve the result using a reader
-                    using (var reader = command.ExecuteReader())
-                    {
-                        // Iterate through the result set and populate the productsDetailCart dictionary
-                        while (reader.Read())
-                        {
-                            int itemId = reader.GetInt32("item_id");
-                            int quantity = reader.GetInt32("quantity");
-
-                            // Add item_id and quantity to the dictionary
-                            productsDetailCart.Add(itemId, quantity);
-                        }
-                    }
-                }
-            }
-
-            var test = new ProductsCartModel
-            {
-                userID = 0,
-                productsDetailCart = productsDetailCart
-            };
             
-            var json1 = JsonSerializer.Serialize(test);
-
-            // Store the JSON string in the session
-            HttpContext.Session.SetString("ShoppingCart", json1);
-
             var json = HttpContext.Session.GetString("ShoppingCart");
 
             if (json == null)
             {
-                // Return an empty DataTable if the shopping cart is empty
                 return new DataTable();
             }
-            // Deserialize the JSON string into your object type
             var cart = JsonSerializer.Deserialize<ProductsCartModel>(json);
 
-            // Creating a DataTable to store the result
             DataTable productsTable = new DataTable();
+
+            int userId = HttpContext.Session.GetInt32("cust_id") ?? -1;
 
             // Opening a connection to the database
             using (var connection = new MySqlConnection(_connectionString))
             {
-                // SQL command to select name, price, and calculate quantity from products table and the dictionary
-
+                connection.Open();
                 string sqlQuery = "SELECT p.name, p.price, p.item_id, p.percent, IFNULL(pd.quantity, 0) AS quantity " +
                                   "FROM ITEMS p " +
                                   "LEFT JOIN (SELECT * FROM (";
@@ -106,7 +64,37 @@ namespace Online_Ceramics_Store.Controllers
                 List<string> values = new List<string>();
                 foreach (var kvp in cart.productsDetailCart)
                 {
-                    values.Add($"SELECT {kvp.Key} AS item_id, {kvp.Value} AS quantity");
+                    int quantity  = kvp.Value;
+
+                    if (GetInventoryQuantity(kvp.Key) == 0)
+                    {
+                        string deleteQuery = "DELETE FROM CART_PROD WHERE cust_id = @custId AND item_id = @itemId";
+                        using (MySqlCommand command = new MySqlCommand(deleteQuery, connection))
+                        {
+                            command.Parameters.AddWithValue("@custId", userId);
+                            command.Parameters.AddWithValue("@itemId", kvp.Key);
+                            command.ExecuteNonQuery();
+                        }
+                        cart.productsDetailCart.Remove(kvp.Key);
+                        continue;
+                    }
+
+                    // Check if the quantity in stock is greater than zero but less than the quantity in the basket
+                    if (GetInventoryQuantity(kvp.Key) < kvp.Value)
+                    {
+                        quantity = GetInventoryQuantity(kvp.Key);
+                        string updateQuery = "UPDATE CART_PROD SET quantity = @quantity WHERE cust_id = @custId AND item_id = @itemId";
+                        using (MySqlCommand command = new MySqlCommand(updateQuery, connection))
+                        {
+                            command.Parameters.AddWithValue("@quantity", quantity);
+                            command.Parameters.AddWithValue("@custId", userId);
+                            command.Parameters.AddWithValue("@itemId", kvp.Key);
+                            command.ExecuteNonQuery();
+                        }
+                        cart.productsDetailCart[kvp.Key] = quantity;
+                    }
+
+                    values.Add($"SELECT {kvp.Key} AS item_id, {quantity} AS quantity");
                 }
 
                 if (values.Count > 0)
@@ -115,21 +103,37 @@ namespace Online_Ceramics_Store.Controllers
 
                     // Completing the SQL query
                     sqlQuery += ") AS temp) AS pd ON p.item_id = pd.item_id having quantity!=0";
-                    Console.WriteLine(sqlQuery);
                     // Creating a SqlDataAdapter to execute the SQL query
                     using (MySqlDataAdapter adapter = new MySqlDataAdapter(sqlQuery, connection))
                     {
                         Console.WriteLine(sqlQuery);
-                        // Opening the connection and filling the DataTable with the result
-                        connection.Open();
                         adapter.Fill(productsTable);
                     }
                 }
             }
 
-            // Returning the DataTable as a result
+            var json1 = JsonSerializer.Serialize(cart);
+            HttpContext.Session.SetString("ShoppingCart", json1);
+
+
             return productsTable;
         }
+
+        private int GetInventoryQuantity(int itemId)
+        {
+            using (var connection = new MySqlConnection(_connectionString))
+            {
+                connection.Open();
+                string query = "SELECT stock_quantity FROM ITEMS WHERE item_id = @itemId";
+                using (var command = new MySqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@itemId", itemId);
+                    var result = command.ExecuteScalar();
+                    return result != null ? Convert.ToInt32(result) : 0;
+                }
+            }
+        }
+
 
         private CartModel GetCartModel()
         {
@@ -225,12 +229,13 @@ namespace Online_Ceramics_Store.Controllers
             {
                 using (var connection = new MySqlConnection(_connectionString))
                 {
+                    int userId = HttpContext.Session.GetInt32("cust_id") ?? -1;
                     connection.Open();
                     // SQL query to update quantity in CART_PROD table
-                    string query = "UPDATE CART_PROD SET quantity = @quantity WHERE item_id = @item_id and cust_id=0";
+                    string query = $"UPDATE CART_PROD SET quantity = @quantity WHERE item_id = @item_id and cust_id={userId}";
                     if (flag == 1)
                     {
-                        query = "DELETE FROM CART_PROD WHERE item_id = @item_id and cust_id=0";
+                        query = $"DELETE FROM CART_PROD WHERE item_id = @item_id and cust_id={userId}";
                     }
                     using (MySqlCommand command = new MySqlCommand(query, connection))
                     {
@@ -344,7 +349,7 @@ namespace Online_Ceramics_Store.Controllers
             }
 
             DataTable productsTable = GetProductsFromCart();
-            
+
             if (productsTable==null || productsTable.Rows.Count==0)
             {
                 TempData["ErrorMessage"] = "Your shopping cart is empty. Please add items to proceed to checkout.";
@@ -366,6 +371,7 @@ namespace Online_Ceramics_Store.Controllers
         public IActionResult completeOrder(CartModel cartModel1)
         {
             cartModel1.userDetails.password = "1111";
+            cartModel1.userDetails.age = "111";
             int userId = HttpContext.Session.GetInt32("cust_id") ?? -1;
             cartModel1.userDetails.cust_id = userId;
 
@@ -460,7 +466,7 @@ namespace Online_Ceramics_Store.Controllers
                         int itemId = Convert.ToInt32(row["item_id"]);
                         int quantity = Convert.ToInt32(row["quantity"]);
 
-                        string updateQuantityPurchasedQuery = $"UPDATE ITEMS SET quantity_purchased = quantity_purchased + {quantity} WHERE item_id = {itemId}";
+                        string updateQuantityPurchasedQuery = $"UPDATE ITEMS SET quantity_purchased = quantity_purchased + {quantity} AND stock_quantity = stock_quantity - {quantity} WHERE item_id = {itemId}";
                         using (var updateCommand = new MySqlCommand(updateQuantityPurchasedQuery, connection))
                         {
                             updateCommand.ExecuteNonQuery();
