@@ -168,7 +168,10 @@ namespace Online_Ceramics_Store.Controllers
 
         public IActionResult cart()
         {
-
+            int? cust_id = HttpContext.Session.GetInt32("cust_id");
+            string? full_name = HttpContext.Session.GetString("full_name");
+            ViewBag.CustId = cust_id;
+            ViewBag.FullName = full_name;
             cartModel = GetCartModel();
             //TempData["CartModel"] = cartModel;
             return View(cartModel);
