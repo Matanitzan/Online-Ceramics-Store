@@ -269,7 +269,7 @@
     <script>
         function updateQuantity(itemId, operation) {
             $.ajax({
-                url: '@Url.Action("GetStockQuantity", "ShoppingCart")', // Create a new action to retrieve stock quantity
+                url: '@Url.Action("GetStockQuantity", "ShoppingCart")',
                 type: 'GET',
                 data: { itemId: itemId },
                 success: function(stockQuantity) {

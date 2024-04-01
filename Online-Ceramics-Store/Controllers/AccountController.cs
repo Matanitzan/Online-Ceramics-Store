@@ -269,7 +269,7 @@ namespace Online_Ceramics_Store.Controllers
 
             var test = new ProductsCartModel
             {
-                userID = 0,
+                userID = userID,
                 productsDetailCart = productsDetailCart
             };
 

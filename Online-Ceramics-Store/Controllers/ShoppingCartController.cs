@@ -228,47 +228,50 @@ namespace Online_Ceramics_Store.Controllers
             HttpContext.Session.SetString("ShoppingCart", json1);
 
             // Update database only if the user is registered
-            try
-            {
-                using (var connection = new MySqlConnection(_connectionString))
+            int userId = HttpContext.Session.GetInt32("cust_id") ?? -1;
+            if (userId != -1) {
+                try
                 {
-                    int userId = HttpContext.Session.GetInt32("cust_id") ?? -1;
-                    connection.Open();
-                    // SQL query to update quantity in CART_PROD table
-                    string query = $"UPDATE CART_PROD SET quantity = @quantity WHERE item_id = @item_id and cust_id={userId}";
-                    if (flag == 1)
+                    using (var connection = new MySqlConnection(_connectionString))
                     {
-                        query = $"DELETE FROM CART_PROD WHERE item_id = @item_id and cust_id={userId}";
-                    }
-                    using (MySqlCommand command = new MySqlCommand(query, connection))
-                    {
-                        if (flag == 0)
+                        connection.Open();
+                        // SQL query to update quantity in CART_PROD table
+                        string query = $"UPDATE CART_PROD SET quantity = @quantity WHERE item_id = @item_id and cust_id={userId}";
+                        if (flag == 1)
                         {
-                            command.Parameters.AddWithValue("@quantity", cartModel.productsDetailCart[itemId]);
+                            query = $"DELETE FROM CART_PROD WHERE item_id = @item_id and cust_id={userId}";
                         }
-                        // Add parameters to the SQL query
-                        command.Parameters.AddWithValue("@item_id", itemId);
+                        using (MySqlCommand command = new MySqlCommand(query, connection))
+                        {
+                            if (flag == 0)
+                            {
+                                command.Parameters.AddWithValue("@quantity", cartModel.productsDetailCart[itemId]);
+                            }
+                            // Add parameters to the SQL query
+                            command.Parameters.AddWithValue("@item_id", itemId);
 
-                        // Execute the SQL command
-                        int rowsAffected = command.ExecuteNonQuery();
-                        
-                        if (rowsAffected > 0)
-                        {                            
-                            // Update successful
-                            TempData["Message"] = "Quantity updated successfully.";
-                        }
-                        else
-                        {
-                            // No rows affected, possibly product not found
-                            TempData["ErrorMessage"] = "Failed to update quantity. Product may not exist.";
+                            // Execute the SQL command
+                            int rowsAffected = command.ExecuteNonQuery();
+
+                            if (rowsAffected > 0)
+                            {
+                                // Update successful
+                                TempData["Message"] = "Quantity updated successfully.";
+                            }
+                            else
+                            {
+                                // No rows affected, possibly product not found
+                                TempData["ErrorMessage"] = "Failed to update quantity. Product may not exist.";
+                            }
                         }
                     }
                 }
+                catch (Exception ex)
+                {
+                    TempData["ErrorMessage"] = "An error occurred while updating quantity: " + ex.Message;
+                }
             }
-            catch (Exception ex)
-            {
-                TempData["ErrorMessage"] = "An error occurred while updating quantity: " + ex.Message;
-            }
+            
             int updatedQuantity = cartModel.productsDetailCart.ContainsKey(itemId)
         ? cartModel.productsDetailCart[itemId]
         : 0;
