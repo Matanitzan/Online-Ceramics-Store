@@ -56,6 +56,7 @@ namespace Online_Ceramics_Store.Controllers
                         
                     }
                 }
+                connection.CloseAsync();
 
             }
             return RedirectToAction("detail", product);
@@ -105,6 +106,7 @@ namespace Online_Ceramics_Store.Controllers
                         }
                     }
                 }
+                connection.CloseAsync();
             }
             int? cust_id = HttpContext.Session.GetInt32("cust_id");
             string? full_name = HttpContext.Session.GetString("full_name");
@@ -149,6 +151,7 @@ namespace Online_Ceramics_Store.Controllers
                         }
                     }
                 }
+                connection.CloseAsync();
             }
 
             // Pass the filtered products to the view
@@ -194,6 +197,7 @@ namespace Online_Ceramics_Store.Controllers
                         }
                     }
                 }
+                connection.CloseAsync();
             }
 
             // Pass the filtered products to the view
@@ -244,6 +248,7 @@ namespace Online_Ceramics_Store.Controllers
                         }
                     }
                 }
+                connection.CloseAsync();
             }
 
             // Sort the list by updated price in descending order
@@ -295,6 +300,7 @@ namespace Online_Ceramics_Store.Controllers
                         }
                     }
                 }
+                connection.CloseAsync();
             }
 
             // Sort the list by price in ascending order after updating the prices
@@ -344,6 +350,7 @@ namespace Online_Ceramics_Store.Controllers
                 string? full_name = HttpContext.Session.GetString("full_name");
                 ViewBag.CustId = cust_id;
                 ViewBag.FullName = full_name;
+                connection.CloseAsync();
                 return View("shop", allfillterProducts);
 
             }
@@ -387,6 +394,7 @@ namespace Online_Ceramics_Store.Controllers
                 string? full_name = HttpContext.Session.GetString("full_name");
                 ViewBag.CustId = cust_id;
                 ViewBag.FullName = full_name;
+                connection.CloseAsync();
                 return View("shop",allProducts);
 
             }

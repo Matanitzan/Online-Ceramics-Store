@@ -71,11 +71,13 @@ namespace Online_Ceramics_Store.Controllers
                         if (rowsAffected > 0)
                         {
                             ViewBag.Message = "Profile updated successfully";
+                            connection.CloseAsync();
                             return View("Profile"); 
                         }
                         else
                         {
                             ViewBag.Message = "Failed to update profile";
+                            connection.CloseAsync();
                             return View("Profile"); 
                         }
                     }
@@ -87,41 +89,44 @@ namespace Online_Ceramics_Store.Controllers
                 return View("Profile"); 
             }
         }
-
         public IActionResult Profile()
         {
             int? cust_id = HttpContext.Session.GetInt32("cust_id");
             string? full_name = HttpContext.Session.GetString("full_name");
             ViewBag.CustId = cust_id;
             ViewBag.FullName = full_name;
-            Customer customer= null;
+            List<Order> orders = new List<Order>();
             using (MySqlConnection connection = new MySqlConnection(_connectionString))
             {
                 connection.Open();
-                string query = "SELECT * FROM USERS WHERE cust_id = @cust_id ";
+                string query = "SELECT ITEMS.name, ITEMS.price, ORDER_ITEMS.quantity, ORDER_ITEMS.price AS item_price, ORDERS.order_id,ORDERS.status FROM ORDERS JOIN ORDER_ITEMS ON ORDERS.order_id = ORDER_ITEMS.order_id JOIN ITEMS ON ORDER_ITEMS.item_id = ITEMS.item_id WHERE ORDERS.cust_id = @cust_id;";
+
                 using (MySqlCommand command = new MySqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@cust_id", cust_id);
                     using (MySqlDataReader reader = command.ExecuteReader())
                     {
-                        if(reader.Read())
+                        while (reader.Read())
                         {
-                            customer = new Customer()
+                            Order order = new Order()
                             {
-                                cust_id = reader.GetInt32("cust_id"),
-                                full_name = reader.GetString("full_name"),
-                                email= reader.GetString("email"),
-                                password= reader.GetString("password"),
-                                phone = reader.GetString("phone"),
-                                city = reader.GetString("city"),
-                                address= reader.GetString("address"),
+                                order_id = reader.GetInt32("order_id"),
+                                price = reader.GetInt32("price"),
+                                quantity = reader.GetInt32("quantity"),
+                                product = reader.GetString("name"),
+                                total_price = reader.GetInt32("item_price"),
+                                status = reader.GetString("status"),
                             };
+                            orders.Add(order);
                         }
                     }
                 }
+                connection.CloseAsync();
+
             }
-            return View(customer);
+            return View(orders);
         }
+        
         [Route("Login")]
         public IActionResult Login() {
             return View();
@@ -156,6 +161,7 @@ namespace Online_Ceramics_Store.Controllers
                             string fullName = reader.GetString("full_name");
                             HttpContext.Session.SetString("full_name", fullName);
                             setSession(custId);
+                            connection.CloseAsync();
                             return RedirectToAction("shop", "Products");
                         }
                         else
@@ -163,6 +169,7 @@ namespace Online_Ceramics_Store.Controllers
                             // User does not exist or invalid credentials, handle accordingly
                             // For example, display error message and return to login page
                             ViewData["ErrorMessage"] = "Invalid email or password";
+                            connection.CloseAsync();
                             return View("Login");
                         }
                     }
@@ -220,10 +227,12 @@ namespace Online_Ceramics_Store.Controllers
                             }
 
                             // Redirect to the login page or any other page
+                            connection.CloseAsync();
                             return View("Login", customer);
                         }
                         else
                         {
+                            connection.CloseAsync();
                             return View("RegisterCustomer", customer);
                         }
                     }
