@@ -71,11 +71,13 @@ namespace Online_Ceramics_Store.Controllers
                         if (rowsAffected > 0)
                         {
                             ViewBag.Message = "Profile updated successfully";
+                            connection.CloseAsync();
                             return View("Profile"); 
                         }
                         else
                         {
                             ViewBag.Message = "Failed to update profile";
+                            connection.CloseAsync();
                             return View("Profile"); 
                         }
                     }
@@ -119,6 +121,7 @@ namespace Online_Ceramics_Store.Controllers
                         }
                     }
                 }
+                connection.CloseAsync();
             }
             return View(customer);
         }
@@ -156,6 +159,7 @@ namespace Online_Ceramics_Store.Controllers
                             string fullName = reader.GetString("full_name");
                             HttpContext.Session.SetString("full_name", fullName);
                             setSession(custId);
+                            connection.CloseAsync();
                             return RedirectToAction("shop", "Products");
                         }
                         else
@@ -163,6 +167,7 @@ namespace Online_Ceramics_Store.Controllers
                             // User does not exist or invalid credentials, handle accordingly
                             // For example, display error message and return to login page
                             ViewData["ErrorMessage"] = "Invalid email or password";
+                            connection.CloseAsync();
                             return View("Login");
                         }
                     }
@@ -220,10 +225,12 @@ namespace Online_Ceramics_Store.Controllers
                             }
 
                             // Redirect to the login page or any other page
+                            connection.CloseAsync();
                             return View("Login", customer);
                         }
                         else
                         {
+                            connection.CloseAsync();
                             return View("RegisterCustomer", customer);
                         }
                     }

@@ -110,21 +110,55 @@
                                     <h6 class="text-truncate mb-3">@product.name</h6>
                                     <div class="d-flex justify-content-center">
                                         @{
-                                            decimal discountedPrice = @product.price - (@product.price * @product.percent / 100);
+                                            int discountedPrice = (int)(product.price - (product.price * product.percent / 100));
                                             if (product.insale == 0)
                                             {
-                                                <h6>@product.price ILS</h6>
+                                                <h6>@product.price$</h6>
                                             }
                                             else
                                             {
-                                                <h6>@discountedPrice.ToString("F") ILS <del>@product.price ILS</del></h6>
+                                                <h6>@discountedPrice$  <del>@product.price$</del></h6>
                                             }
-                                        }
+                                            
+                                           
+                                       }
                                     </div>
+                                    @{
+                                        if (product.stock_quantity == 0 )
+                                         {
+                                            <h8><del>Out Of Stock</del></h8>
+                                         }
+                                        else
+                                        {
+                                            <br />
+                                        }
+                                    }
+                                    
+                                    
                                 </div>
                                 <div class="card-footer d-flex justify-content-between bg-light border">
                                     <a href="@Url.Action("detail", "Products",product)" class="btn btn-sm text-dark p-0"><i class="fas fa-eye  mr-1"></i>View Detail</a>
-                                    <a href="" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart mr-1"></i>Add To Cart</a>
+                                    @{
+                                        if (product.stock_quantity == 0 && (@ViewBag.CustId != null))
+                                        {
+                                            <a href="#" id="notifyButton" class="btn btn-sm text-dark p-0">Notify</a>
+                                            <script>
+                                                document.getElementById('notifyButton').addEventListener('click', function () {
+                                                    alert('A message will be sent to your email.');
+                                                });
+                                            </script>
+
+                                        }
+                                        else if (product.stock_quantity == 0 && (@ViewBag.CustId == null))
+                                        {
+                                            <a href="@Url.Action("RegisterCustomer", "Account")" class="btn btn-sm text-dark p-0">Sign up</a>
+                                        }
+                                        else
+                                        {
+                                            <a href="" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart mr-1"></i>Add To Cart</a>
+                                        }
+                                    }
+                                    
                                 </div>
                             </div>
                         </div>

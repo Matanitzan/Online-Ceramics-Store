@@ -56,7 +56,7 @@ namespace Online_Ceramics_Store.Controllers
                         
                     }
                 }
-
+                connection.CloseAsync();
             }
             return RedirectToAction("detail", product);
             
@@ -105,6 +105,7 @@ namespace Online_Ceramics_Store.Controllers
                         }
                     }
                 }
+                connection.CloseAsync();
             }
             int? cust_id = HttpContext.Session.GetInt32("cust_id");
             string? full_name = HttpContext.Session.GetString("full_name");
@@ -149,15 +150,16 @@ namespace Online_Ceramics_Store.Controllers
                         }
                     }
                 }
+                connection.CloseAsync();
             }
 
             // Pass the filtered products to the view
             return View("shop", allfillterProducts);
         }
         // Method to calculate new price
-        private float CalculateNewPrice(Product product)
+        private int CalculateNewPrice(Product product)
         {
-            return product.price - (product.price * product.percent / 100);
+            return (int)(product.price - (product.price * product.percent / 100));
         }
         public IActionResult fillterBypopular()
         {
@@ -194,6 +196,7 @@ namespace Online_Ceramics_Store.Controllers
                         }
                     }
                 }
+                connection.CloseAsync();
             }
 
             // Pass the filtered products to the view
@@ -232,7 +235,7 @@ namespace Online_Ceramics_Store.Controllers
                             // Update price if the product is on sale
                             if (product.insale == 1)
                             {
-                                product.UpdatedPrice = product.price - (product.price * product.percent / 100);
+                                product.UpdatedPrice = (int)(product.price - (product.price * product.percent / 100));
                             }
                             else
                             {
@@ -244,6 +247,7 @@ namespace Online_Ceramics_Store.Controllers
                         }
                     }
                 }
+                connection.CloseAsync();
             }
 
             // Sort the list by updated price in descending order
@@ -283,7 +287,7 @@ namespace Online_Ceramics_Store.Controllers
                             // Update price if the product is on sale
                             if (product.insale == 1)
                             {
-                                product.UpdatedPrice = product.price - (product.price * product.percent / 100);
+                                  product.UpdatedPrice =(int)(product.price - (product.price * product.percent / 100));
                             }
                             else
                             {
@@ -295,11 +299,11 @@ namespace Online_Ceramics_Store.Controllers
                         }
                     }
                 }
+                connection.CloseAsync();
             }
 
             // Sort the list by price in ascending order after updating the prices
             List<Product> sortedProducts = allfillterProducts.OrderBy(p => p.UpdatedPrice).ToList();
-
             // Pass the sorted products to the view
             return View("shop", sortedProducts);
         }
@@ -344,6 +348,7 @@ namespace Online_Ceramics_Store.Controllers
                 string? full_name = HttpContext.Session.GetString("full_name");
                 ViewBag.CustId = cust_id;
                 ViewBag.FullName = full_name;
+                connection.CloseAsync();
                 return View("shop", allfillterProducts);
 
             }
@@ -387,6 +392,7 @@ namespace Online_Ceramics_Store.Controllers
                 string? full_name = HttpContext.Session.GetString("full_name");
                 ViewBag.CustId = cust_id;
                 ViewBag.FullName = full_name;
+                connection.CloseAsync();
                 return View("shop",allProducts);
 
             }
