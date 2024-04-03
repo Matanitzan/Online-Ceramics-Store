@@ -162,7 +162,7 @@ namespace Online_Ceramics_Store.Controllers
                             HttpContext.Session.SetString("full_name", fullName);
                             setSession(custId);
                             connection.CloseAsync();
-                            return RedirectToAction("shop", "Products");
+                            return RedirectToAction("HomePage", "Home");
                         }
                         else
                         {
