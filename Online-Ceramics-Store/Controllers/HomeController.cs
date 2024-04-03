@@ -45,17 +45,12 @@ namespace Online_Ceramics_Store.Controllers
         }
         public IActionResult AddToCart(int itemId)
         {
-
             var json = HttpContext.Session.GetString("ShoppingCart");
-
-            if (json == null)
+            var cartModel=new ProductsCartModel();
+            if (json != null)
             {
-                var unregister = new ProductsCartModel();
-                var json2 = JsonSerializer.Serialize(unregister);
-                HttpContext.Session.SetString("ShoppingCart", json2);
+                cartModel = JsonSerializer.Deserialize<ProductsCartModel>(json);
             }
-
-            var cartModel = JsonSerializer.Deserialize<ProductsCartModel>(json);
             int userId = HttpContext.Session.GetInt32("cust_id") ?? -1;
             string query;
             // Increment quantity

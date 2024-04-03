@@ -311,26 +311,49 @@
     <script>
     $(document).ready(function () {
         $(".add-to-cart").click(function (e) {
-            e.preventDefault(); 
-            var itemId = $(this).data("item-id"); 
+            e.preventDefault();
+            var itemId = $(this).data("item-id");
+
+            // Make AJAX call to get stock quantity
             $.ajax({
-                url: "@Url.Action("AddToCart", "Home")", // URL of the controller action
-                type: "POST",
-                data: { itemId: itemId }, // Data to send to the server
-                success: function (response) {
-                    if (response.success) {
-                        alert("Item added to cart successfully.");
-                    } else {
-                        alert("Failed to add item to cart.");
+                url: '@Url.Action("GetStockQuantity", "ShoppingCart")',
+                type: 'GET',
+                data: { itemId: itemId },
+                success: function (stockQuantity) {
+                    console.log('Stock quantity received: ' + stockQuantity);
+
+                    // Check if stock quantity is sufficient
+                    var requestedQuantity = 1; // You can modify this as per your requirement
+                    if (stockQuantity < requestedQuantity) {
+                        alert('Requested quantity exceeds available stock.');
+                        return; // Prevent further execution
                     }
+
+                    // Proceed with adding item to cart if stock is available
+                    $.ajax({
+                        url: '@Url.Action("AddToCart", "Home")',
+                        type: 'POST',
+                        data: { itemId: itemId },
+                        success: function (response) {
+                            if (response.success) {
+                                alert("Item added to cart successfully.");
+                            } else {
+                                alert("Failed to add item to cart.");
+                            }
+                        },
+                        error: function () {
+                            alert("An error occurred while adding item to cart.");
+                        }
+                    });
                 },
                 error: function () {
-                    alert("An error occurred while adding item to cart.");
+                    console.error('Failed to retrieve stock quantity.');
                 }
             });
         });
     });
     </script>
+
 
     <!-- Template Javascript -->
     <script src="js/main.js"></script>

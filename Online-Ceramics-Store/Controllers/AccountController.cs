@@ -156,6 +156,7 @@ namespace Online_Ceramics_Store.Controllers
                             string fullName = reader.GetString("full_name");
                             HttpContext.Session.SetString("full_name", fullName);
                             setSession(custId);
+                            connection.Close();
                             return RedirectToAction("shop", "Products");
                         }
                         else
@@ -163,10 +164,10 @@ namespace Online_Ceramics_Store.Controllers
                             // User does not exist or invalid credentials, handle accordingly
                             // For example, display error message and return to login page
                             ViewData["ErrorMessage"] = "Invalid email or password";
+                            connection.Close();
                             return View("Login");
                         }
-                    }
-                    
+                    }                    
                 }
             }
         }
@@ -218,12 +219,14 @@ namespace Online_Ceramics_Store.Controllers
                                 updateCommand.Parameters.AddWithValue("@numofUsers", currentNumOfUsers + 1);
                                 updateCommand.ExecuteNonQuery();
                             }
+                            connection.Close();
 
                             // Redirect to the login page or any other page
                             return View("Login", customer);
                         }
                         else
                         {
+                            connection.Close();
                             return View("RegisterCustomer", customer);
                         }
                     }
@@ -264,6 +267,7 @@ namespace Online_Ceramics_Store.Controllers
                             productsDetailCart.Add(itemId, quantity);
                         }
                     }
+                    connection.Close();
                 }
             }
 

@@ -66,7 +66,7 @@ namespace Online_Ceramics_Store.Controllers
                 {
                     int quantity  = kvp.Value;
 
-                    if (GetInventoryQuantity(kvp.Key) == 0)
+                    if (GetStockQuantity(kvp.Key) == 0)
                     {
                         string deleteQuery = "DELETE FROM CART_PROD WHERE cust_id = @custId AND item_id = @itemId";
                         using (MySqlCommand command = new MySqlCommand(deleteQuery, connection))
@@ -80,9 +80,9 @@ namespace Online_Ceramics_Store.Controllers
                     }
 
                     // Check if the quantity in stock is greater than zero but less than the quantity in the basket
-                    if (GetInventoryQuantity(kvp.Key) < kvp.Value)
+                    if (GetStockQuantity(kvp.Key) < kvp.Value)
                     {
-                        quantity = GetInventoryQuantity(kvp.Key);
+                        quantity = GetStockQuantity(kvp.Key);
                         string updateQuery = "UPDATE CART_PROD SET quantity = @quantity WHERE cust_id = @custId AND item_id = @itemId";
                         using (MySqlCommand command = new MySqlCommand(updateQuery, connection))
                         {
@@ -118,22 +118,6 @@ namespace Online_Ceramics_Store.Controllers
 
             return productsTable;
         }
-
-        private int GetInventoryQuantity(int itemId)
-        {
-            using (var connection = new MySqlConnection(_connectionString))
-            {
-                connection.Open();
-                string query = "SELECT stock_quantity FROM ITEMS WHERE item_id = @itemId";
-                using (var command = new MySqlCommand(query, connection))
-                {
-                    command.Parameters.AddWithValue("@itemId", itemId);
-                    var result = command.ExecuteScalar();
-                    return result != null ? Convert.ToInt32(result) : 0;
-                }
-            }
-        }
-
 
         private CartModel GetCartModel()
         {
@@ -281,7 +265,7 @@ namespace Online_Ceramics_Store.Controllers
 
 
         [HttpGet]
-        public ActionResult<int> GetStockQuantity(int itemId)
+        public int GetStockQuantity(int itemId)
         {
             int stockQuantity = 0;
             try
@@ -360,14 +344,10 @@ namespace Online_Ceramics_Store.Controllers
             {
                 TempData["ErrorMessage"] = "Your shopping cart is empty. Please add items to proceed to checkout.";
                 return RedirectToAction("cart");
-                //return View(cartModel);
-
             }
 
             cartModel = GetCartModel();
             cartModel.userDetails = userDetails;
-
-            //TempData["try"] = cartModel;
 
             return View(cartModel);
         }
