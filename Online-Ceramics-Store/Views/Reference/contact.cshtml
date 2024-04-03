@@ -1,6 +1,9 @@
 @model ContactViewModel
 <!-- Rest of your HTML and form -->
-
+@{
+    // Check if TempData contains an error message
+    string successMessage = TempData["Success"] as string;
+}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -30,81 +33,6 @@
 </head>
 
 <body>
-    <!-- Topbar Start -->
-    <!--<div class="container-fluid">
-        <div class="row py-2 justify-content-center" style="background-color: #EDF1FF;">
-            <div class="col-lg-6 d-none d-lg-block">
-                <div class="d-inline-flex align-items-center">
-                    <a class="text-dark" href="@Url.Action("faqs", "Reference")">FAQs</a>
-                    <span class="text-muted px-2">|</span>
-                    <a class="text-dark" href="">Help</a>
-                    <span class="text-muted px-2">|</span>
-                    <a class="text-dark" href="@Url.Action("Contact", "Reference")">Support</a>
-                </div>
-            </div>
-            <div class="col-lg-6 text-center text-lg-right">
-                <div class="d-inline-flex align-items-center">
-                    <a class="text-dark px-2" href="">
-                        <i class="fab fa-facebook-f"></i>
-                    </a>
-                    <a class="text-dark px-2" href="">
-                        <i class="fab fa-instagram"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-        <div class="row align-items-center py-3 px-xl-10">
-            <div class="col-lg-4 d-none d-lg-block text-lg-left text-center mb-lg-0 mb-3">
-                <a href="@Url.Action("HomePage", "Home")" class="text-decoration-none">
-                    <h1 class="m-0 display-5 font-weight-semi-bold" style="color: black;">Kal Vahomer</h1>
-                </a>
-            </div>
-            <div class="col-lg-4 col-8 text-center mb-lg-0 mb-3">
-                <form action="">
-                    <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Search for products">
-                        <div class="input-group-append">
-                            <span class="input-group-text bg-transparent text-primary">
-                                <i class="fa fa-search" style="color: #D19C97;"></i>
-                            </span>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="col-lg-4 col-4 text-lg-right text-center">
-                <a href="@Url.Action("cart", "ShoppingCart")" class="btn border">
-                    <i class="fas fa-shopping-cart" style="color: #D19C97;"></i>
-                    <span class="badge">0</span>
-                </a>
-            </div>
-        </div>
-    </div>-->
-    <!-- Topbar End -->
-    <!-- Navbar Start -->
-    <!--<div class="container-fluid">
-        <div class="row border-top w-100 mx-auto">
-                <nav class="navbar navbar-expand-lg bg-light navbar-light py-3 py-lg-0 px-0">
-                    <a href="" class="text-decoration-none d-block d-lg-none">
-                        <h1 class="m-0 display-5 font-weight-semi-bold"><span class="text-primary font-weight-bold border px-3 mr-1"></span>Kal Vahomer</h1>
-                    </a>
-                    <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
-                        <div class="navbar-nav mr-auto py-0">
-                            <a href="@Url.Action("HomePage", "Home")" class="nav-item nav-link active">Home</a>
-                            <a href="@Url.Action("shop", "Products")" class="nav-item nav-link">Shop</a>
-                            <a href="Profile.html" class="nav-item nav-link">Profile</a>
-                        </div>
-                        <div class="navbar-nav ml-auto py-0">
-                            <a href="" class="nav-item nav-link">Login</a>
-                            <a href="" class="nav-item nav-link">Register</a>
-                        </div>
-                    </div>
-                </nav>
-        </div>
-    </div>-->
-    <!-- Navbar End -->
     <!-- Contact Start -->
     <div class="container-fluid pt-5">
         <div class="text-center mb-4">
@@ -114,6 +42,12 @@
             <div class="col-lg-7 mb-5">
                 <div class="contact-form">
                     <div id="success"></div>
+                    @if (!string.IsNullOrEmpty(successMessage))
+                    {
+                        <div class="alert alert-success" role="alert">
+                            @successMessage
+                        </div>
+                    }
                     <form name="sentMessage" id="contactForm" novalidate="novalidate" action="/Reference/SendMessage" method="post">
                         <div class="control-group">
                             <input type="text" class="form-control" id="name" name="fullName" placeholder="Your Name" />
@@ -143,6 +77,7 @@
                                 Send Message
                             </button>
                         </div>
+
                     </form>
 
                 </div>

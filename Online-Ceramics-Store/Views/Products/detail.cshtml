@@ -55,24 +55,49 @@
 
             <div class="col-lg-7 pb-5">
                 <h3 class="font-weight-semi-bold">@(Model.name)</h3>
-                <h3 class="font-weight-semi-bold mb-4">@(Model.price) $</h3>
+                @{
+                    if (Model.insale == 1)
+                    {
+                        <h3 class="font-weight-semi-bold mb-4"> @(Model.price - (Model.price * Model.percent / 100)) $</h3>
+
+                    }
+                    else
+                    {
+                        <h3 class="font-weight-semi-bold mb-4"> @(Model.price) $</h3>
+                    }
+                    if (Model.stock_quantity == 0)
+                    {
+                        <h8><del>Out Of Stock</del></h8>
+                    }
+                    else
+                    {
+                        <br />
+                    }
+                }
                 <p class="mb-4">@(Model.description)</p>
-                
+
                 <div class="d-flex align-items-center mb-4 pt-2">
-                    <div class="input-group quantity mr-3" style="width: 130px;">
-                        <div class="input-group-btn">
-                            <button class="btn btn btn-minus" style="background-color: #d19c97 ;">
-                                <i class="fa fa-minus"></i>
-                            </button>
-                        </div>
-                        <input type="text" class="form-control bg-secondary text-center" value="1">
-                        <div class="input-group-btn" style="background-color: #d19c97 ;">
-                            <button class="btn btn btn-plus">
-                                <i class="fa fa-plus"></i>
-                            </button>
-                        </div>
-                    </div>
-                    <button class="btn btn px-3" style="background-color: #d19c97 ;"><i class="fa fa-shopping-cart mr-1"></i> Add To Cart</button>
+                    @{
+                        if (Model.stock_quantity == 0 && (@ViewBag.CustId != null))
+                        {
+                            <a href="#" id="notifyButton" class="btn btn px-3" style="background-color: #d19c97 ;">Notify</a>
+                            <script>document.getElementById('notifyButton').addEventListener('click', function () {
+                                    alert('A message will be sent to your email.');
+                                });</script>
+                        }
+                        else if (Model.stock_quantity == 0 && (@ViewBag.CustId == null))
+                        {
+                            <a href="@Url.Action("RegisterCustomer", "Account")" class="btn btn px-3" style="background-color: #d19c97 ;">Sign up</a>
+                        }
+                        else
+                        {
+                            <div class="d-flex align-items-center">
+                                <a href="#" class="btn btn px-3 add-to-cart mr-2" style="background-color: #d19c97" data-item-id="@Model.item_id"><i class="fas fa-shopping-cart mr-1"></i>Add To Cart</a>
+                                <a href="@Url.Action("BuyNow", "Products", Model)" class="btn btn px-3" style="background-color: #d19c97">Buy now</a>
+                            </div>
+
+                        }
+                    }
                 </div>
                 
             </div>
@@ -96,28 +121,70 @@
                     </div>
 
                 </div>
+            </div>
         </div>
-    </div>
-    <!-- Shop Detail End -->
-
-    <!-- Footer Start -->
-    
-    <!-- Back to Top -->
-    <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
+        <!-- Shop Detail End -->
+        <!-- Footer Start -->
+        <!-- Back to Top -->
+        <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
 
 
-    <!-- JavaScript Libraries -->
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
-    <script src="lib/easing/easing.min.js"></script>
-    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+        <!-- JavaScript Libraries -->
+        <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+        <script src="lib/easing/easing.min.js"></script>
+        <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+        <script>
+        $(document).ready(function () {
+            $(".add-to-cart").click(function (e) {
+                e.preventDefault();
+                var itemId = $(this).data("item-id");
 
-    <!-- Contact Javascript File -->
-    <script src="mail/jqBootstrapValidation.min.js"></script>
-    <script src="mail/contact.js"></script>
+                // Make AJAX call to get stock quantity
+                $.ajax({
+                    url: '@Url.Action("GetStockQuantity", "ShoppingCart")',
+                    type: 'GET',
+                    data: { itemId: itemId },
+                    success: function (stockQuantity) {
+                        console.log('Stock quantity received: ' + stockQuantity);
 
-    <!-- Template Javascript -->
-    <script src="js/main.js"></script>
+                        // Check if stock quantity is sufficient
+                        var requestedQuantity = 1; // You can modify this as per your requirement
+                        if (stockQuantity < requestedQuantity) {
+                            alert('Requested quantity exceeds available stock.');
+                            return; // Prevent further execution
+                        }
+
+                        // Proceed with adding item to cart if stock is available
+                        $.ajax({
+                            url: '@Url.Action("AddToCart", "Home")',
+                            type: 'POST',
+                            data: { itemId: itemId },
+                            success: function (response) {
+                                if (response.success) {
+                                    alert("Item added to cart successfully.");
+                                } else {
+                                    alert("Failed to add item to cart.");
+                                }
+                            },
+                            error: function () {
+                                alert("An error occurred while adding item to cart.");
+                            }
+                        });
+                    },
+                    error: function () {
+                        console.error('Failed to retrieve stock quantity.');
+                    }
+                });
+            });
+        });
+        </script>
+        <!-- Contact Javascript File -->
+        <script src="mail/jqBootstrapValidation.min.js"></script>
+        <script src="mail/contact.js"></script>
+
+        <!-- Template Javascript -->
+        <script src="js/main.js"></script>
 </body>
 
 </html>

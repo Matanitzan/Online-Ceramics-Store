@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using MySqlConnector;
 using Online_Ceramics_Store.Models;
 using System.Data;
+using System.Text.Json;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -229,13 +230,13 @@ namespace Online_Ceramics_Store.Controllers
                                 category_id = reader.GetInt32("category_id"),
                                 insale = reader.GetInt32("insale"),
                                 percent = reader.GetInt32("percent"),
-                                price = reader.GetInt32("price"),
+                                price = reader.GetDouble("price"),
                             };
 
                             // Update price if the product is on sale
                             if (product.insale == 1)
                             {
-                                product.UpdatedPrice = (int)(product.price - (product.price * product.percent / 100));
+                                product.UpdatedPrice = (product.price - (product.price * product.percent / 100));
                             }
                             else
                             {
@@ -281,7 +282,7 @@ namespace Online_Ceramics_Store.Controllers
                                 category_id = reader.GetInt32("category_id"),
                                 insale = reader.GetInt32("insale"),
                                 percent = reader.GetInt32("percent"),
-                                price = reader.GetInt32("price"),
+                                price = reader.GetDouble("price"),
                             };
 
                             // Update price if the product is on sale
@@ -397,6 +398,27 @@ namespace Online_Ceramics_Store.Controllers
 
             }
             
+        }
+        public IActionResult BuyNow(Product product)
+        {
+            var json = HttpContext.Session.GetString("ShoppingCart");
+            var cartModel = new ProductsCartModel();
+            if (json != null)
+            {
+                cartModel = JsonSerializer.Deserialize<ProductsCartModel>(json);
+            }
+            if (cartModel.productsDetailCart.ContainsKey(product.item_id))
+            {
+                cartModel.productsDetailCart[product.item_id]++;
+            }
+            else
+            {
+                cartModel.productsDetailCart[product.item_id] = 1;
+            }
+            var json1 = JsonSerializer.Serialize(cartModel);
+            HttpContext.Session.SetString("ShoppingCart", json1);
+
+            return RedirectToAction("checkout", "ShoppingCart");
         }
     }
 }

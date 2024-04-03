@@ -36,9 +36,11 @@ namespace Online_Ceramics_Store.Controllers
         [HttpPost]
         public IActionResult SendMessage(ContactViewModel contact)
         {
+            if (ModelState.IsValid)
+            {
+                TempData["Success"] = "Your question has been sent successfully, you will receive an answer in the next few days to your email";
+            }
             return View("contact", contact);
-
-            // If validation fails, return to the same view with validation errors
         }
         public IActionResult faqs()
         {

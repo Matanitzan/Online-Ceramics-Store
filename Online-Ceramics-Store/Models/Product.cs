@@ -12,13 +12,13 @@ namespace Online_Ceramics_Store.Models
         public string description { get; set; }
         public string information { get; set; }
 		public int quantity_purchased { get; set; }
-        public int UpdatedPrice { get; set; }
+        public double UpdatedPrice { get; set; }
 
         public int stock_quantity { get; set; }
         public int category_id { get; set; }
         public int insale { get; set; }
         public int percent { get; set; }
-        public int price { get; set; }
+        public double price { get; set; }
 
 
 	}

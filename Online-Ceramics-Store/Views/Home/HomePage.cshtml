@@ -32,39 +32,6 @@
 </head>
 
 <body>
-    <!-- Topbar Start -->
-    <div class="container-fluid">
-        
-        @*<div class="row align-items-center py-3 px-xl-10">
-            <div class="col-lg-4 d-none d-lg-block text-lg-left text-center mb-lg-0 mb-3">
-                <a href="@Url.Action("HomePage", "Home")" class="text-decoration-none">
-                    <h1 class="m-0 display-5 font-weight-semi-bold" style="color: black;">Kal Vahomer</h1>
-                </a>
-            </div>
-            <div class="col-lg-4 col-8 text-center mb-lg-0 mb-3">
-                <form action="">
-                    <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Search for products">
-                        <div class="input-group-append">
-                            <span class="input-group-text bg-transparent text-primary">
-                                <i class="fa fa-search" style="color: #D19C97;"></i>
-                            </span>
-                        </div>
-                    </div>
-                </form>
-            </div>
-            <div class="col-lg-4 col-4 text-lg-right text-center">
-                <a href="@Url.Action("cart", "ShoppingCart")" class="btn border">
-                    <i class="fas fa-shopping-cart" style="color: #D19C97;"></i>
-                    <span class="badge">0</span>
-                </a>
-            </div>
-        </div>*@
-
-    </div>
-    <!-- Topbar End -->
-
-
     <!-- Navbar Start -->
     <div class="container-fluid mb-5">
         <div class="row border-top px-xl-5">
@@ -90,7 +57,7 @@
                     <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
                         <span class="navbar-toggler-icon"></span>
                     </button>
-                    
+
                 </nav>
                 <div id="header-carousel" class="carousel slide" data-ride="carousel">
                     <div class="carousel-inner">
@@ -130,8 +97,6 @@
         </div>
     </div>
     <!-- Navbar End -->
-
-
     <!-- Featured Start -->
     <div class="container-fluid pt-5">
         <div class="row px-xl-5 pb-3">
@@ -162,7 +127,6 @@
         </div>
     </div>
     <!-- Featured End -->
-
     <!-- Products Start -->
     <div class="container-fluid pt-5">
         <div class="text-center mb-4">
@@ -182,7 +146,8 @@
                     </div>
                     <div class="card-footer d-flex justify-content-between bg-light border">
                         <a href="@Url.Action("detailByName", "Products",new { nameDetail = "Terracotta Pot Set"})" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
-                        <a href="" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</a>
+                        <a href="#" class="btn btn-sm text-dark p-0 add-to-cart" data-item-id="6"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</a>
+
                     </div>
                 </div>
             </div>
@@ -199,7 +164,8 @@
                     </div>
                     <div class="card-footer d-flex justify-content-between bg-light border">
                         <a href="@Url.Action("detailByName", "Products",new { nameDetail = "Espresso Cup"})" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
-                        <a href="" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</a>
+                        <a href="#" class="btn btn-sm text-dark p-0 add-to-cart" data-item-id="11"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</a>
+
                     </div>
                 </div>
             </div>
@@ -216,7 +182,8 @@
                     </div>
                     <div class="card-footer d-flex justify-content-between bg-light border">
                         <a href="@Url.Action("detailByName", "Products",new { nameDetail = "Set of 4 Ceramic Soup Bowls"})" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
-                        <a href="" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</a>
+                        <a href="#" class="btn btn-sm text-dark p-0 add-to-cart" data-item-id="14"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</a>
+
                     </div>
                 </div>
             </div>
@@ -233,15 +200,14 @@
                     </div>
                     <div class="card-footer d-flex justify-content-between bg-light border">
                         <a href="@Url.Action("detailByName", "Products",new { nameDetail = "Large Ceramic Travel Mug"})" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
-                        <a href="" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</a>
+                        <a href="#" class="btn btn-sm text-dark p-0 add-to-cart" data-item-id="24"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</a>
+
                     </div>
                 </div>
             </div>
         </div>
     </div>
     <!-- Products End -->
-
-
     <!-- Subscribe Start -->
     <div class="container-fluid bg-secondary my-5">
         <div class="row justify-content-md-center py-5 px-xl-5">
@@ -250,19 +216,22 @@
                     <h2 class="section-title px-5 mb-3"><span class="bg-secondary px-2">Stay Updated</span></h2>
                     <p>Enter your email and we will personally update you on new items that are added to the site, on promotions and benefits in a remote manner for you</p>
                 </div>
-                <form action="">
+                <form action="" id="subscribeForm">
                     <div class="input-group">
-                        <input type="text" class="form-control border-white p-4" placeholder="Email Goes Here">
+                        <input type="text" id="emailInput" class="form-control border-white p-4" placeholder="Email Goes Here">
                         <div class="input-group-append">
-                            <button class="btn btn-primary px-4">Subscribe</button>
+                            <button type="button" class="btn btn-primary px-4" onclick="subscribe()">Subscribe</button>
                         </div>
                     </div>
                 </form>
+
+                <div class="alert alert-success" role="alert" id="successMessage" style="display: none;">
+                    Email subscribed successfully!
+                </div>
             </div>
         </div>
     </div>
     <!-- Subscribe End -->
-
     <!-- Footer Start -->
     <div class="container-fluid text-dark mt-5 pt-5" style="background-color: #EDF1FF;">
         <div class="row px-xl-5 pt-5">
@@ -302,8 +271,6 @@
         </div>
     </div>
     <!-- Footer End -->
-
-
     <!-- Back to Top -->
     <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
 
@@ -317,7 +284,65 @@
     <!-- Contact Javascript File -->
     <script src="mail/jqBootstrapValidation.min.js"></script>
     <script src="mail/contact.js"></script>
+    <script>
+    $(document).ready(function () {
+        $(".add-to-cart").click(function (e) {
+            e.preventDefault();
+            var itemId = $(this).data("item-id");
+            // Make AJAX call to get stock quantity
+            $.ajax({
+                url: '@Url.Action("GetStockQuantity", "ShoppingCart")',
+                type: 'GET',
+                data: { itemId: itemId },
+                success: function (stockQuantity) {
+                    console.log('Stock quantity received: ' + stockQuantity);
+                    // Check if stock quantity is sufficient
+                    var requestedQuantity = 1; // You can modify this as per your requirement
+                    if (stockQuantity < requestedQuantity) {
+                        alert('Requested quantity exceeds available stock.');
+                        return; // Prevent further execution
+                    }
+                    // Proceed with adding item to cart if stock is available
+                    $.ajax({
+                        url: '@Url.Action("AddToCart", "Home")',
+                        type: 'POST',
+                        data: { itemId: itemId },
+                        success: function (response) {
+                            if (response.success) {
+                                alert("Item added to cart successfully.");
+                            } else {
+                                alert("Failed to add item to cart.");
+                            }
+                        },
+                        error: function () {
+                            alert("An error occurred while adding item to cart.");
+                        }
+                    });
+                },
+                error: function () {
+                    console.error('Failed to retrieve stock quantity.');
+                }
+            });
+        });
+    });
+    </script>
+    <script>function isValidEmail(email) {
+            // Simple email format validation
+            var emailParts = email.split('.');
+            return emailParts.length === 2 && emailParts[0].length > 0 && emailParts[1].length > 0;
+        }
 
+        function subscribe() {
+            var emailInput = document.getElementById("emailInput").value;
+            if (isValidEmail(emailInput)) {
+                // Show success message
+                document.getElementById("successMessage").style.display = "block";
+                console.log("Subscribed email: " + emailInput);
+                document.getElementById("emailInput").value = "";
+            } else {
+                alert("Please enter a valid email address.");
+            }
+        }</script>
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
 </body>

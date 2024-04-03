@@ -1,113 +1,123 @@
 ﻿@model Online_Ceramics_Store.Models.Customer
+@{
+    // Check if TempData contains an error message
+    string errorMessage = TempData["ErrorMessage"] as string;
+}
 <section class="vh-100">
-  <div class="container h-100">
-    <div class="row d-flex justify-content-center align-items-center h-70">
-      <div class="col-lg-12 col-xl-11">
-        <div class="card text-black" style="border-radius: 25px;">
-          <div class="card-body p-md-5">
-            <div class="row justify-content-center">
-              <div class="col-md-10 col-lg-6 col-xl-5 order-2 order-lg-1">
+    <div class="container h-100">
+        <div class="row d-flex justify-content-center align-items-center h-70">
+            <div class="col-lg-12 col-xl-11">
+                <div class="card text-black" style="border-radius: 25px;">
+                    <div class="card-body p-md-5">
+                        <div class="row justify-content-center">
+                            <div class="col-md-10 col-lg-6 col-xl-5 order-2 order-lg-1">
 
-                <p class="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">Sign up</p>
+                                <p class="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">Sign up</p>
+                                <!-- Check if errorMessage is not null and display it -->
+                                @if (!string.IsNullOrEmpty(errorMessage))
+                                {
+                                    <div class="alert alert-danger" role="alert">
+                                        @errorMessage
+                                    </div>
+                                }
+                                <form class="mx-1 mx-md-4" action="AddCustomer" method="post">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-4">
+                                            <div class="d-flex flex-row align-items-center">
+                                                <i class="fas fa-user fa-lg me-3 fa-fw"></i>
+                                                <div class="form-outline flex-fill mb-0">
+                                                    <input id="form3Example1c" class="form-control" name="full_name" />
+                                                    <label class="form-label" for="form3Example1c">Full Name</label>
+                                                    <div>@Html.ValidationMessageFor(x => x.full_name)</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-4">
+                                            <div class="d-flex flex-row align-items-center">
+                                                <i class="fas fa-envelope fa-lg me-3 fa-fw"></i>
+                                                <div class="form-outline flex-fill mb-0">
+                                                    <input name="email" id="form3Example3c" class="form-control" />
+                                                    <label class="form-label" for="form3Example3c">Email</label>
+                                                    <div>@Html.ValidationMessageFor(x => x.email)</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-4">
+                                            <div class="d-flex flex-row align-items-center">
+                                                <i class="fas fa-lock fa-lg me-3 fa-fw"></i>
+                                                <div class="form-outline flex-fill mb-0">
+                                                    <input name="password" id="form3Example4c" class="form-control" />
+                                                    <label class="form-label" for="form3Example4c">Password</label>
+                                                    <div>@Html.ValidationMessageFor(x => x.password)</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-4">
+                                            <div class="d-flex flex-row align-items-center">
+                                                <i class="fas fa-key fa-lg me-3 fa-fw"></i>
+                                                <div class="form-outline flex-fill mb-0">
+                                                    <input name="password" id="form3Example4cd" class="form-control" />
+                                                    <label class="form-label" for="form3Example4cd">Repeat your password</label>
+                                                    <div>@Html.ValidationMessageFor(x => x.password)</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-4">
+                                            <div class="d-flex flex-row align-items-center">
+                                                <i class="fas fa-key fa-lg me-3 fa-fw"></i>
+                                                <div class="form-outline flex-fill mb-0">
+                                                    <input name="phone" id="form3Example4ce" class="form-control" />
+                                                    <label class="form-label" for="form3Example4ce">Phone number</label>
+                                                    <div>@Html.ValidationMessageFor(x => x.phone)</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-4">
+                                            <div class="d-flex flex-row align-items-center">
+                                                <i class="fas fa-key fa-lg me-3 fa-fw"></i>
+                                                <div class="form-outline flex-fill mb-0">
+                                                    <input name="city" id="form3Example4cf" class="form-control" />
+                                                    <label class="form-label" for="form3Example4cf">City</label>
+                                                    <div>@Html.ValidationMessageFor(x => x.city)</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-4">
+                                            <div class="d-flex flex-row align-items-center">
+                                                <i class="fas fa-key fa-lg me-3 fa-fw"></i>
+                                                <div class="form-outline flex-fill mb-0">
+                                                    <input name="address" id="form3Example4cg" class="form-control" />
+                                                    <label class="form-label" for="form3Example4cg">Address</label>
+                                                    <div>@Html.ValidationMessageFor(x => x.address)</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                <form class="mx-1 mx-md-4" action="AddCustomer" method="post">
-                    <div class="row">
-                        <div class="col-md-6 mb-4">
-                            <div class="d-flex flex-row align-items-center">
-                                <i class="fas fa-user fa-lg me-3 fa-fw"></i>
-                                <div class="form-outline flex-fill mb-0">
-                                    <input id="form3Example1c" class="form-control" name="full_name" />
-                                    <label class="form-label" for="form3Example1c">Full Name</label>
-                                    <div>@Html.ValidationMessageFor(x => x.full_name)</div>
-                                </div>
+                                    <div class="form-check d-flex justify-content-center mb-5">
+                                        <input class="form-check-input me-2" type="checkbox" value="" id="form2Example3c" />
+                                        <label class="form-check-label" for="form2Example3">
+                                            I agree all statements in <a href="#!">Terms of service</a>
+                                        </label>
+                                    </div>
+
+                                    <div class="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
+                                        <button type="submit" class="btn btn-lg" style="background-color: #d19c97"><b>Register</b></button>
+                                    </div>
+
+                                </form>
+
                             </div>
-                        </div>
-                        <div class="col-md-6 mb-4">
-                            <div class="d-flex flex-row align-items-center">
-                                <i class="fas fa-envelope fa-lg me-3 fa-fw"></i>
-                                <div class="form-outline flex-fill mb-0">
-                                    <input name="email" id="form3Example3c" class="form-control" />
-                                    <label class="form-label" for="form3Example3c">Email</label>
-                                    <div>@Html.ValidationMessageFor(x => x.email)</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 mb-4">
-                            <div class="d-flex flex-row align-items-center">
-                                <i class="fas fa-lock fa-lg me-3 fa-fw"></i>
-                                <div class="form-outline flex-fill mb-0">
-                                    <input name="password" id="form3Example4c" class="form-control" />
-                                    <label class="form-label" for="form3Example4c">Password</label>
-                                    <div>@Html.ValidationMessageFor(x => x.password)</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 mb-4">
-                            <div class="d-flex flex-row align-items-center">
-                                <i class="fas fa-key fa-lg me-3 fa-fw"></i>
-                                <div class="form-outline flex-fill mb-0">
-                                    <input name="password" id="form3Example4cd" class="form-control" />
-                                    <label class="form-label" for="form3Example4cd">Repeat your password</label>
-                                    <div>@Html.ValidationMessageFor(x => x.password)</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 mb-4">
-                            <div class="d-flex flex-row align-items-center">
-                                <i class="fas fa-key fa-lg me-3 fa-fw"></i>
-                                <div class="form-outline flex-fill mb-0">
-                                    <input name="phone" id="form3Example4ce" class="form-control" />
-                                    <label class="form-label" for="form3Example4ce">Phone number</label>
-                                    <div>@Html.ValidationMessageFor(x => x.phone)</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 mb-4">
-                            <div class="d-flex flex-row align-items-center">
-                                <i class="fas fa-key fa-lg me-3 fa-fw"></i>
-                                <div class="form-outline flex-fill mb-0">
-                                    <input name="city" id="form3Example4cf" class="form-control" />
-                                    <label class="form-label" for="form3Example4cf">City</label>
-                                    <div>@Html.ValidationMessageFor(x => x.city)</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 mb-4">
-                            <div class="d-flex flex-row align-items-center">
-                                <i class="fas fa-key fa-lg me-3 fa-fw"></i>
-                                <div class="form-outline flex-fill mb-0">
-                                    <input name="address" id="form3Example4cg" class="form-control" />
-                                    <label class="form-label" for="form3Example4cg">Address</label>
-                                    <div>@Html.ValidationMessageFor(x => x.address)</div>
-                                </div>
+                            <div class="col-md-10 col-lg-6 col-xl-7 d-flex align-items-center order-1 order-lg-2">
+
+                                <img src="~/Images/Small Clay Flower Pot.jpg"
+                                     class="img-fluid h-70" alt="Sample image" style="max-width: 80%;">
+
                             </div>
                         </div>
                     </div>
-
-                    <div class="form-check d-flex justify-content-center mb-5">
-                        <input class="form-check-input me-2" type="checkbox" value="" id="form2Example3c" />
-                        <label class="form-check-label" for="form2Example3">
-                            I agree all statements in <a href="#!">Terms of service</a>
-                        </label>
-                    </div>
-
-                    <div class="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
-                        <button type="submit" class="btn btn-lg" style="background-color: #d19c97"><b>Register</b></button>
-                    </div>
-                    
-                </form>
-
-              </div>
-              <div class="col-md-10 col-lg-6 col-xl-7 d-flex align-items-center order-1 order-lg-2">
-
-                <img src="~/Images/Small Clay Flower Pot.jpg"
-                  class="img-fluid h-70" alt="Sample image" style="max-width: 80%;">
-
-              </div>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
     </div>
-  </div>
 </section>

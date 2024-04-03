@@ -168,7 +168,7 @@ namespace Online_Ceramics_Store.Controllers
                         {
                             // User does not exist or invalid credentials, handle accordingly
                             // For example, display error message and return to login page
-                            ViewData["ErrorMessage"] = "Invalid email or password";
+                            TempData["ErrorMessage"] = "Invalid email or password";
                             connection.CloseAsync();
                             return View("Login");
                         }
@@ -193,46 +193,64 @@ namespace Online_Ceramics_Store.Controllers
             {
                 using (MySqlConnection connection = new MySqlConnection(_connectionString))
                 {
-                    connection.Open();
-
-                    // Retrieve the current value of numofUsers from the database
-                    string query = "SELECT numofUsers FROM NumberOfUsers WHERE id = 1";
-                    int currentNumOfUsers;
-
-                    using (MySqlCommand command = new MySqlCommand(query, connection))
+                    try
                     {
-                        currentNumOfUsers = (int)command.ExecuteScalar();
-                    }
+                        connection.Open();
 
-                    // Insert the new customer with the current value of numofUsers
-                    query = "INSERT INTO USERS (cust_id, full_Name, email, password, phone, city, address) VALUES (@cust_id, @full_Name, @email, @password, @phone, @city, @address)";
-                    using (MySqlCommand command = new MySqlCommand(query, connection))
-                    {
-                        command.Parameters.AddWithValue("@cust_id", currentNumOfUsers);
-                        command.Parameters.AddWithValue("@full_Name", customer.full_name);
-                        command.Parameters.AddWithValue("@email", customer.email);
-                        command.Parameters.AddWithValue("@password", customer.password);
-                        command.Parameters.AddWithValue("@phone", customer.phone);
-                        command.Parameters.AddWithValue("@city", customer.city);
-                        command.Parameters.AddWithValue("@address", customer.address);
-                        int numRowEffected = command.ExecuteNonQuery();
-                        if (numRowEffected > 0)
+                        // Retrieve the current value of numofUsers from the database
+                        string query = "SELECT numofUsers FROM NumberOfUsers WHERE id = 1";
+                        int currentNumOfUsers;
+
+                        using (MySqlCommand command = new MySqlCommand(query, connection))
                         {
-                            // Update the value of numofUsers in the database
-                            query = "UPDATE NumberOfUsers SET numofUsers = @numofUsers WHERE id = 1";
-                            using (MySqlCommand updateCommand = new MySqlCommand(query, connection))
-                            {
-                                updateCommand.Parameters.AddWithValue("@numofUsers", currentNumOfUsers + 1);
-                                updateCommand.ExecuteNonQuery();
-                            }
+                            currentNumOfUsers = (int)command.ExecuteScalar();
+                        }
 
-                            // Redirect to the login page or any other page
-                            connection.CloseAsync();
-                            return View("Login", customer);
+                        // Insert the new customer with the current value of numofUsers
+                        query = "INSERT INTO USERS (cust_id, full_Name, email, password, phone, city, address) VALUES (@cust_id, @full_Name, @email, @password, @phone, @city, @address)";
+                        using (MySqlCommand command = new MySqlCommand(query, connection))
+                        {
+                            command.Parameters.AddWithValue("@cust_id", currentNumOfUsers);
+                            command.Parameters.AddWithValue("@full_Name", customer.full_name);
+                            command.Parameters.AddWithValue("@email", customer.email);
+                            command.Parameters.AddWithValue("@password", customer.password);
+                            command.Parameters.AddWithValue("@phone", customer.phone);
+                            command.Parameters.AddWithValue("@city", customer.city);
+                            command.Parameters.AddWithValue("@address", customer.address);
+                            int numRowEffected = command.ExecuteNonQuery();
+                            if (numRowEffected > 0)
+                            {
+                                // Update the value of numofUsers in the database
+                                query = "UPDATE NumberOfUsers SET numofUsers = @numofUsers WHERE id = 1";
+                                using (MySqlCommand updateCommand = new MySqlCommand(query, connection))
+                                {
+                                    updateCommand.Parameters.AddWithValue("@numofUsers", currentNumOfUsers + 1);
+                                    updateCommand.ExecuteNonQuery();
+                                }
+
+                                // Redirect to the login page or any other page
+                                connection.CloseAsync();
+                                return View("Login", customer);
+                            }
+                            else
+                            {
+                                connection.CloseAsync();
+                                return View("RegisterCustomer", customer);
+                            }
+                        }
+                    }
+                    catch (MySqlException ex)
+                    {
+                        if (ex.Number == 1062) // MySQL error code for duplicate entry
+                        {
+                            // Display a popup to the user informing them that the email is already registered
+                            TempData["ErrorMessage"] = "Email is already registered. Please use a different email.";
+                            return View("RegisterCustomer", customer);
                         }
                         else
                         {
-                            connection.CloseAsync();
+                            // Handle other MySQL exceptions
+                            TempData["ErrorMessage"] = "An error occurred while processing your request. Please try again later.";
                             return View("RegisterCustomer", customer);
                         }
                     }
@@ -278,7 +296,7 @@ namespace Online_Ceramics_Store.Controllers
 
             var test = new ProductsCartModel
             {
-                userID = 0,
+                userID = userID,
                 productsDetailCart = productsDetailCart
             };
 

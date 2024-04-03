@@ -66,7 +66,7 @@ namespace Online_Ceramics_Store.Controllers
                 {
                     int quantity  = kvp.Value;
 
-                    if (GetInventoryQuantity(kvp.Key) == 0)
+                    if (GetStockQuantity(kvp.Key) == 0)
                     {
                         string deleteQuery = "DELETE FROM CART_PROD WHERE cust_id = @custId AND item_id = @itemId";
                         using (MySqlCommand command = new MySqlCommand(deleteQuery, connection))
@@ -80,9 +80,9 @@ namespace Online_Ceramics_Store.Controllers
                     }
 
                     // Check if the quantity in stock is greater than zero but less than the quantity in the basket
-                    if (GetInventoryQuantity(kvp.Key) < kvp.Value)
+                    if (GetStockQuantity(kvp.Key) < kvp.Value)
                     {
-                        quantity = GetInventoryQuantity(kvp.Key);
+                        quantity = GetStockQuantity(kvp.Key);
                         string updateQuery = "UPDATE CART_PROD SET quantity = @quantity WHERE cust_id = @custId AND item_id = @itemId";
                         using (MySqlCommand command = new MySqlCommand(updateQuery, connection))
                         {
@@ -118,22 +118,6 @@ namespace Online_Ceramics_Store.Controllers
 
             return productsTable;
         }
-
-        private int GetInventoryQuantity(int itemId)
-        {
-            using (var connection = new MySqlConnection(_connectionString))
-            {
-                connection.Open();
-                string query = "SELECT stock_quantity FROM ITEMS WHERE item_id = @itemId";
-                using (var command = new MySqlCommand(query, connection))
-                {
-                    command.Parameters.AddWithValue("@itemId", itemId);
-                    var result = command.ExecuteScalar();
-                    return result != null ? Convert.ToInt32(result) : 0;
-                }
-            }
-        }
-
 
         private CartModel GetCartModel()
         {
@@ -226,49 +210,52 @@ namespace Online_Ceramics_Store.Controllers
             var json1 = JsonSerializer.Serialize(cartModel);
             // Store the JSON string in the session
             HttpContext.Session.SetString("ShoppingCart", json1);
-
-            // Update database only if the user is registered
-            try
+            int userId = HttpContext.Session.GetInt32("cust_id") ?? -1;
+            if (userId != -1)
             {
-                using (var connection = new MySqlConnection(_connectionString))
+                try
                 {
-                    int userId = HttpContext.Session.GetInt32("cust_id") ?? -1;
-                    connection.Open();
-                    // SQL query to update quantity in CART_PROD table
-                    string query = $"UPDATE CART_PROD SET quantity = @quantity WHERE item_id = @item_id and cust_id={userId}";
-                    if (flag == 1)
+                    using (var connection = new MySqlConnection(_connectionString))
                     {
-                        query = $"DELETE FROM CART_PROD WHERE item_id = @item_id and cust_id={userId}";
-                    }
-                    using (MySqlCommand command = new MySqlCommand(query, connection))
-                    {
-                        if (flag == 0)
+                        connection.Open();
+                        // SQL query to update quantity in CART_PROD table
+                        string query = $"UPDATE CART_PROD SET quantity = @quantity WHERE item_id = @item_id and cust_id={userId}";
+                        if (flag == 1)
                         {
-                            command.Parameters.AddWithValue("@quantity", cartModel.productsDetailCart[itemId]);
+                            query = $"DELETE FROM CART_PROD WHERE item_id = @item_id and cust_id={userId}";
                         }
-                        // Add parameters to the SQL query
-                        command.Parameters.AddWithValue("@item_id", itemId);
+                        using (MySqlCommand command = new MySqlCommand(query, connection))
+                        {
+                            if (flag == 0)
+                            {
+                                command.Parameters.AddWithValue("@quantity", cartModel.productsDetailCart[itemId]);
+                            }
+                            // Add parameters to the SQL query
+                            command.Parameters.AddWithValue("@item_id", itemId);
 
-                        // Execute the SQL command
-                        int rowsAffected = command.ExecuteNonQuery();
-                        
-                        if (rowsAffected > 0)
-                        {                            
-                            // Update successful
-                            TempData["Message"] = "Quantity updated successfully.";
-                        }
-                        else
-                        {
-                            // No rows affected, possibly product not found
-                            TempData["ErrorMessage"] = "Failed to update quantity. Product may not exist.";
+                            // Execute the SQL command
+                            int rowsAffected = command.ExecuteNonQuery();
+
+                            if (rowsAffected > 0)
+                            {
+                                // Update successful
+                                TempData["Message"] = "Quantity updated successfully.";
+                            }
+                            else
+                            {
+                                // No rows affected, possibly product not found
+                                TempData["ErrorMessage"] = "Failed to update quantity. Product may not exist.";
+                            }
                         }
                     }
                 }
+                catch (Exception ex)
+                {
+                    TempData["ErrorMessage"] = "An error occurred while updating quantity: " + ex.Message;
+                }
+
             }
-            catch (Exception ex)
-            {
-                TempData["ErrorMessage"] = "An error occurred while updating quantity: " + ex.Message;
-            }
+            // Update database only if the user is registered
             int updatedQuantity = cartModel.productsDetailCart.ContainsKey(itemId)
         ? cartModel.productsDetailCart[itemId]
         : 0;
@@ -278,7 +265,7 @@ namespace Online_Ceramics_Store.Controllers
 
 
         [HttpGet]
-        public ActionResult<int> GetStockQuantity(int itemId)
+        public int GetStockQuantity(int itemId)
         {
             int stockQuantity = 0;
             try
